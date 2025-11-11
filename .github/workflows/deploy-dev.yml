@@ -47,4 +47,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=virto-demo-app --branch=main --commit-dirty=true
+          command: pages deploy dist --project-name=kreivo-dashboard --branch=main --commit-dirty=true
