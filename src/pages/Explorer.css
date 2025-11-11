@@ -1,0 +1,166 @@
+.explorer-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #071914 0%, #000201 100%);
+  padding: 24px;
+  color: white;
+}
+
+.explorer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.explorer-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+  font-family: var(--font-primary, 'Outfit', sans-serif);
+}
+
+.explorer-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 32px;
+}
+
+.explorer-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.explorer-loading p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.explorer-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.blocks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.block-card {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.block-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.block-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  font-family: var(--font-primary, 'Outfit', sans-serif);
+}
+
+.block-status {
+  font-size: 0.85rem;
+  padding: 4px 12px;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.block-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.block-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.block-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.block-value {
+  color: white;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+.block-hash {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.block-hash:hover {
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .explorer-page {
+    padding: 16px;
+  }
+
+  .explorer-title {
+    font-size: 1.5rem;
+  }
+
+  .explorer-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .block-card {
+    padding: 16px;
+  }
+
+  .block-number {
+    font-size: 1.1rem;
+  }
+
+  .block-info-row {
+    font-size: 0.85rem;
+  }
+}
+

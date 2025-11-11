@@ -1,0 +1,48 @@
+/* standarize native modal */
+.modal {
+  max-width: calc(100% - 6px - 2em);
+  max-height: calc(100% - 6px - 2em);
+}
+
+dialog.modal[open] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+dialog.modal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.3s ease-out,
+    overlay 0.3s ease-out allow-discrete,
+    display 0.3s ease-out allow-discrete;
+}
+
+@starting-style {
+  dialog.modal[open] {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+/* Transition the :backdrop when the dialog modal is promoted to the top layer */
+dialog.modal::backdrop {
+  opacity: 0;
+  transition:
+    display 0.1s allow-discrete,
+    overlay 0.1s allow-discrete,
+    opacity 0.1s;
+}
+
+dialog.modal[open]::backdrop {
+  opacity: 1;
+}
+
+/* This starting-style rule cannot be nested inside the above selector
+because the nesting selector cannot represent pseudo-elements. */
+@starting-style {
+  dialog.modal[open]::backdrop {
+    opacity: 0;
+  }
+}
