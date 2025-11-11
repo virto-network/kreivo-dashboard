@@ -4,7 +4,6 @@ import './Widget.css';
 import './InlineSelect.css';
 
 export const SendTransactionWidget: React.FC<WidgetProps> = ({
-  command,
   onComplete,
   onCancel,
 }) => {

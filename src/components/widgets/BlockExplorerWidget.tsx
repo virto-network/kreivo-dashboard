@@ -3,7 +3,6 @@ import { WidgetProps } from './WidgetRegistry';
 import './Widget.css';
 
 export const BlockExplorerWidget: React.FC<WidgetProps> = ({
-  command,
   onComplete,
   onCancel,
 }) => {

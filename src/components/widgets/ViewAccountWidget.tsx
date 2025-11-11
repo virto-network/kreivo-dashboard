@@ -3,7 +3,6 @@ import { WidgetProps } from './WidgetRegistry';
 import './Widget.css';
 
 export const ViewAccountWidget: React.FC<WidgetProps> = ({
-  command,
   onComplete,
   onCancel,
 }) => {

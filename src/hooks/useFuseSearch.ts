@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import Fuse from 'fuse.js';
+import type { FuseResultMatch } from 'fuse.js';
 import { commands, Command, defaultSuggestions } from '@/data/commands.en';
 
 interface UseFuseSearchOptions {
@@ -10,7 +11,7 @@ interface UseFuseSearchOptions {
 interface SearchResult {
   item: Command;
   score?: number;
-  matches?: readonly Fuse.FuseResultMatch[];
+  matches?: readonly FuseResultMatch[];
 }
 
 export const useFuseSearch = (options: UseFuseSearchOptions = {}) => {

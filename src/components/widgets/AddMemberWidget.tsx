@@ -13,7 +13,6 @@ interface ParsedSegment {
 }
 
 export const AddMemberWidget: React.FC<WidgetProps> = ({
-  command,
   onComplete,
   onCancel,
 }) => {
@@ -176,7 +175,7 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     setCursorPosition(newCursorPos);
 
     setShowCommunityList(!!parsed.activeHashtag && !hasMention);
-    setShowUserList(!!parsed.activeMention || (communitySegment && !hasMention && newValue.includes('add member @')));
+    setShowUserList(!!parsed.activeMention || (communitySegment && !hasMention && newValue.includes('add member @')) || false);
     setSelectedCommunityIndex(0);
     setSelectedUserIndex(0);
   };

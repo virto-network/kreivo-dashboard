@@ -1,4 +1,4 @@
-import { chainClient$, client$ } from "@/state/chains/chain.state"
+import { client$ } from "@/state/chains/chain.state"
 import { SystemEvent } from "@polkadot-api/observable-client"
 import { state } from "@react-rxjs/core"
 import { combineKeys, partitionByKey } from "@react-rxjs/utils"
@@ -29,7 +29,6 @@ import {
   takeWhile,
   tap,
   timer,
-  toArray,
   withLatestFrom,
 } from "rxjs"
 import { BlockInfo as RawBlockInfo } from "polkadot-api"
