@@ -8,11 +8,11 @@ export interface Command {
 
 export const commands: Command[] = [
   {
-    id: 'create-dao',
-    label: 'Create DAO',
-    keywords: ['create', 'dao', 'organization', 'new', 'setup'],
-    related: ['view-daos', 'join-dao', 'dao-proposals'],
-    category: 'DAO',
+    id: 'create-community',
+    label: 'Create Community',
+    keywords: ['create', 'dao', 'organization', 'new', 'setup', 'community'],
+    related: ['view-communities', 'join-community', 'community-proposals'],
+    category: 'Community',
   },
   {
     id: 'view-daos',
@@ -108,7 +108,7 @@ export const commands: Command[] = [
 ];
 
 export const defaultSuggestions: string[] = [
-  'create-dao',
+  'create-community',
   'block-explorer',
   'send-transaction',
 ];
