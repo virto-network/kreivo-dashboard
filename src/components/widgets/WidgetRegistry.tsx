@@ -5,6 +5,7 @@ export interface WidgetProps {
   command: Command;
   onComplete: (data: any) => void;
   onCancel: () => void;
+  initialData?: any;
 }
 
 export interface WidgetConfig {
@@ -18,6 +19,8 @@ import { SendTransactionWidget } from './SendTransactionWidget';
 import { ViewAccountWidget } from './ViewAccountWidget';
 import { BlockExplorerWidget } from './BlockExplorerWidget';
 import { AddMemberWidget } from './AddMemberWidget';
+import { RemoveMemberWidget } from './RemoveMemberWidget';
+import { BuyMembershipWidget } from './BuyMembershipWidget';
 
 export const widgetRegistry: Record<string, React.ComponentType<WidgetProps>> = {
   'create-community': CreateCommunityWidget,
@@ -25,6 +28,8 @@ export const widgetRegistry: Record<string, React.ComponentType<WidgetProps>> = 
   'view-account': ViewAccountWidget,
   'block-explorer': BlockExplorerWidget,
   'add-member-community': AddMemberWidget,
+  'remove-member-community': RemoveMemberWidget,
+  'buy-membership': BuyMembershipWidget,
 };
 
 export const getWidget = (commandId: string): React.ComponentType<WidgetProps> | null => {

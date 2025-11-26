@@ -7,7 +7,6 @@ import { take } from 'rxjs/operators';
 import { kreivo } from '@polkadot-api/descriptors';
 import { useVirto } from '@/contexts/VirtoContext';
 import { useCommunities } from '@/hooks/useCommunities';
-import { resolveUserAddress } from '@/utils/userResolution';
 import './Widget.css';
 import './InlineSelect.css';
 
@@ -19,7 +18,12 @@ interface ParsedSegment {
   end: number;
 }
 
-export const AddMemberWidget: React.FC<WidgetProps> = ({
+interface MembershipItem {
+  itemId: number;
+  price: bigint;
+}
+
+export const BuyMembershipWidget: React.FC<WidgetProps> = ({
   onComplete,
   onCancel,
 }) => {
@@ -31,7 +35,8 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
   const [selectedCommunityIndex, setSelectedCommunityIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const { inputRef, measureRef } = useAutoResizeInput(input, '#community add member @user');
+  const [isSearching, setIsSearching] = useState(false);
+  const { inputRef, measureRef } = useAutoResizeInput(input, 'for #community buy 10 memberships');
   const containerRef = useRef<HTMLDivElement>(null);
 
   const communities = communitiesData.map(c => ({
@@ -47,13 +52,14 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     segments: ParsedSegment[];
     activeHashtag: string | null;
     hashtagStart: number | null;
-    userAddress: string | null;
+    quantity: number | null;
   } => {
     const segments: ParsedSegment[] = [];
     let activeHashtag: string | null = null;
     let hashtagStart: number | null = null;
 
     const hashtagRegex = /#(\w*)/g;
+    const quantityRegex = /(?:for\s+#\w+\s+)?buy\s+(\d+)\s+memberships?/i;
 
     let lastIndex = 0;
     const matches: Array<{ type: 'hashtag'; start: number; end: number; value: string }> = [];
@@ -107,17 +113,17 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
       });
     }
 
-    let userAddress: string | null = null;
-    const memberMatch = text.match(/add member\s+(@?\S+)/i);
-    if (memberMatch) {
-      userAddress = memberMatch[1].trim();
+    let quantity: number | null = null;
+    const quantityMatch = quantityRegex.exec(text);
+    if (quantityMatch) {
+      quantity = parseInt(quantityMatch[1], 10);
     }
 
     return {
       segments,
       activeHashtag,
       hashtagStart,
-      userAddress,
+      quantity,
     };
   }, []);
 
@@ -129,9 +135,9 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     const parsed = parseInput(newValue, newCursorPos);
     const communitySegment = parsed.segments.find((s) => s.type === 'community');
 
-    if (communitySegment && !newValue.includes('add member')) {
+    if (communitySegment) {
       const afterCommunity = newValue.substring(communitySegment.end);
-      if (!afterCommunity.trim().startsWith('add member')) {
+      if (!afterCommunity.trim().startsWith('buy')) {
         const communityName = communitySegment.value;
         const hasValidCommunityName = communityName.length > 0;
         const justTypedSpace = newValue.length > oldValue.length &&
@@ -141,10 +147,10 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
         if (justTypedSpace && hasValidCommunityName) {
           const beforeCommunity = newValue.substring(0, communitySegment.end);
           const afterCommunityText = newValue.substring(communitySegment.end + 1);
-          const autoText = ' add member ';
+          const autoText = ' buy 1 memberships';
           const finalValue = beforeCommunity + autoText + afterCommunityText;
           setInput(finalValue);
-          const newPos = communitySegment.end + autoText.length;
+          const newPos = communitySegment.end + 5; // Position after "buy "
           setCursorPosition(newPos);
           setShowCommunityList(false);
           setTimeout(() => {
@@ -154,6 +160,17 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
           return;
         }
       }
+    }
+
+    if (newValue === '#' && oldValue === '') {
+      const finalValue = 'for #';
+      setInput(finalValue);
+      setCursorPosition(5);
+      setTimeout(() => {
+        inputRef.current?.setSelectionRange(5, 5);
+        inputRef.current?.focus();
+      }, 0);
+      return;
     }
 
     setInput(newValue);
@@ -196,14 +213,81 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
         const parsed = parseInput(input, cursorPosition);
         const community = parsed.segments.find((s) => s.type === 'community');
 
-        if (community && parsed.userAddress) {
-          handleSubmitTransaction(community.value, parsed.userAddress);
+        if (community && parsed.quantity) {
+          handleSubmitTransaction(community.value, parsed.quantity);
         }
       }
     }
   };
 
-  const handleSubmitTransaction = async (communityName: string, userName: string) => {
+  const handleCommunitySelect = (community: typeof communities[0]) => {
+    const parsed = parseInput(input, cursorPosition);
+    if (parsed.hashtagStart !== null) {
+      const before = input.substring(0, parsed.hashtagStart);
+      const after = input.substring(parsed.hashtagStart + (parsed.activeHashtag?.length || 0) + 1);
+
+      const prefix = before.trim() === '' ? 'for ' : before;
+      const autoText = ' buy 1 memberships';
+      const newInput = `${prefix}#${community.name}${autoText}${after}`;
+      setInput(newInput);
+      setShowCommunityList(false);
+      setTimeout(() => {
+        const newPos = prefix.length + community.name.length + 6; // Position after "buy "
+        inputRef.current?.setSelectionRange(newPos, newPos);
+        inputRef.current?.focus();
+      }, 0);
+    }
+  };
+
+  const findCheapestMemberships = useCallback(async (communityId: number, quantity: number): Promise<MembershipItem[]> => {
+    setIsSearching(true);
+    try {
+      const { client } = await firstValueFrom(chainClient$.pipe(take(1)));
+      if (!client) throw new Error('Chain client not available');
+      const typedApi = client.getTypedApi(kreivo);
+
+      const availableMemberships: MembershipItem[] = [];
+
+      for (let itemId = 0; itemId < 100; itemId++) {
+        try {
+          const priceData = await typedApi.query.CommunityMemberships.ItemPriceOf.getValue(0, itemId);
+          console.log("priceData", priceData);
+          console.log("itemId", itemId);
+          console.log("communityId", communityId);
+          if (priceData) {
+            const [price, buyer] = priceData;
+            if (!buyer) {
+              availableMemberships.push({ itemId, price });
+              if (availableMemberships.length >= quantity * 2) {
+                break;
+              }
+            }
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+
+      if (availableMemberships.length === 0) {
+        throw new Error('No memberships available for sale in this community.');
+      }
+
+      if (availableMemberships.length < quantity) {
+        throw new Error(`Only ${availableMemberships.length} memberships available, but ${quantity} requested.`);
+      }
+
+      availableMemberships.sort((a, b) => Number(a.price - b.price));
+      return availableMemberships.slice(0, quantity);
+
+    } catch (error) {
+      console.error('Error searching for memberships:', error);
+      throw error;
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  const handleSubmitTransaction = async (communityName: string, quantity: number) => {
     if (!isAuthenticated) {
       setSubmitError('Please connect your wallet first.');
       return;
@@ -219,11 +303,16 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
       return;
     }
 
+    if (quantity <= 0) {
+      setSubmitError('Quantity must be greater than 0.');
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError(null);
 
     try {
-      console.log('Adding member to community:', communityName, userName);
+      console.log('Buying memberships for community:', communityName, 'Quantity:', quantity);
 
       const { client } = await firstValueFrom(chainClient$.pipe(take(1)));
       if (!client) {
@@ -231,64 +320,89 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
       }
       const typedApi = client.getTypedApi(kreivo);
 
-      let resolvedAddress = userName;
-      if (userName.startsWith('@')) {
-        try {
-          console.log(`Resolving username ${userName}...`);
-          resolvedAddress = await resolveUserAddress(userName);
-          console.log(`Resolved ${userName} to ${resolvedAddress}`);
-        } catch (resolveError: any) {
-          console.error('Resolution error:', resolveError);
-          setSubmitError(resolveError.message);
-          setIsSubmitting(false);
-          return;
-        }
+      const community = communities.find(c => c.name.toLowerCase() === communityName.toLowerCase());
+      if (!community) {
+        throw new Error(`Community "${communityName}" not found`);
+      }
+      const communityIdNum = parseInt(community.id);
+
+      const memberships = await findCheapestMemberships(communityIdNum, quantity);
+
+      console.log(`Found ${memberships.length} memberships to purchase`);
+      if (memberships.length === 1) {
+        const membership = memberships[0];
+        const tx = typedApi.tx.CommunityMemberships.buy_item({
+          collection: 0,
+          item: membership.itemId,
+          bid_price: membership.price,
+        });
+
+        const encodedCallHex = await tx.getEncodedData();
+        const encodedCallHexString = encodedCallHex.asHex();
+
+        console.log('Encoded Call Hex:', encodedCallHexString);
+        console.log('Signing and submitting transaction...');
+
+        const txResult = await sdk.custom.submitCallAsync(
+          sdk.auth.sessionSigner,
+          { callDataHex: encodedCallHexString }
+        );
+
+        console.log('Transaction result:', txResult);
+        onComplete({
+          communityId: communityIdNum,
+          communityName,
+          quantity: 1,
+          itemIds: [membership.itemId],
+          totalPrice: membership.price.toString(),
+          txHash: txResult?.txHash || txResult?.hash || 'submitted',
+          success: true
+        });
+      } else {
+        const buyTxs = memberships.map(membership =>
+          typedApi.tx.CommunityMemberships.buy_item({
+            collection: 0,
+            item: membership.itemId,
+            bid_price: membership.price,
+          })
+        );
+
+        const buyCallsData = await Promise.all(buyTxs.map(tx => tx.decodedCall));
+
+        const batchTx = typedApi.tx.Utility.batch_all({
+          calls: buyCallsData,
+        });
+
+        const encodedCallHex = await batchTx.getEncodedData();
+        const encodedCallHexString = encodedCallHex.asHex();
+
+        console.log('Encoded Call Hex:', encodedCallHexString);
+        console.log('Signing and submitting batch transaction...');
+
+        const txResult = await sdk.custom.submitCallAsync(
+          sdk.auth.sessionSigner,
+          { callDataHex: encodedCallHexString }
+        );
+
+        const totalPrice = memberships.reduce((sum, m) => sum + m.price, 0n);
+
+        console.log('Transaction result:', txResult);
+        onComplete({
+          communityId: communityIdNum,
+          communityName,
+          quantity: memberships.length,
+          itemIds: memberships.map(m => m.itemId),
+          totalPrice: totalPrice.toString(),
+          txHash: txResult?.txHash || txResult?.hash || 'submitted',
+          success: true
+        });
       }
 
-      const tx = typedApi.tx.Communities.add_member({
-        who: { type: "Id" as const, value: resolvedAddress },
-      });
-
-      const encodedCallHex = await tx.getEncodedData();
-      const encodedCallHexString = encodedCallHex.asHex();
-
-      console.log('Encoded Call Hex:', encodedCallHexString);
-      console.log('Signing and submitting transaction...');
-
-      const txResult = await sdk.custom.submitCallAsync(
-        sdk.auth.sessionSigner,
-        { callDataHex: encodedCallHexString }
-      );
-
-      console.log('Transaction result:', txResult);
-      onComplete({
-        community: communityName,
-        user: userName,
-        fullText: input,
-        txHash: txResult?.txHash || txResult?.hash || 'submitted',
-        success: true
-      });
     } catch (error: any) {
       console.error('Transaction error:', error);
       setSubmitError(error.message || 'Transaction failed');
+    } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleCommunitySelect = (community: typeof communities[0]) => {
-    const parsed = parseInput(input, cursorPosition);
-    if (parsed.hashtagStart !== null) {
-      const before = input.substring(0, parsed.hashtagStart);
-      const after = input.substring(parsed.hashtagStart + (parsed.activeHashtag?.length || 0) + 1);
-      const autoText = ' add member ';
-      const newInput = `${before}#${community.name}${autoText}${after}`;
-      setInput(newInput);
-      setShowCommunityList(false);
-      setTimeout(() => {
-        const newPos = parsed.hashtagStart! + community.name.length + autoText.length + 1;
-        inputRef.current?.setSelectionRange(newPos, newPos);
-        inputRef.current?.focus();
-      }, 0);
     }
   };
 
@@ -307,7 +421,7 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     return (
       <div className="widget-form" ref={containerRef}>
         <div className="widget-input-wrapper">
-          <span className="widget-prefix">Add Member:</span>
+          <span className="widget-prefix">Buy Membership:</span>
           <div style={{ padding: '12px', color: 'rgba(255, 255, 255, 0.6)', textAlign: 'center' }}>
             Loading communities...
           </div>
@@ -315,6 +429,8 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
       </div>
     );
   }
+
+  const isValidSubmit = communitySegment && parsed.quantity && parsed.quantity > 0;
 
   return (
     <div className="widget-form" ref={containerRef}>
@@ -334,13 +450,13 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
         aria-hidden="true"
       />
       <div className="widget-input-wrapper">
-        <span className="widget-prefix">Add Member:</span>
+        <span className="widget-prefix">Buy Memberships:</span>
         <div className="inline-select-container">
           <input
             ref={inputRef}
             type="text"
             className="widget-input"
-            placeholder="#community add member @user_or_address"
+            placeholder="for #community buy 10 memberships"
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
@@ -348,6 +464,7 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
               setCursorPosition(e.currentTarget.selectionStart || 0);
             }}
             autoComplete="off"
+            disabled={isSubmitting || isSearching}
           />
           {showCommunityList && filteredCommunities.length > 0 && (
             <div className="inline-select-dropdown">
@@ -370,15 +487,13 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
           type="button"
           className="widget-submit"
           onClick={() => {
-            const parsed = parseInput(input, cursorPosition);
-            const community = parsed.segments.find((s) => s.type === 'community');
-            if (community && parsed.userAddress) {
-              handleSubmitTransaction(community.value, parsed.userAddress);
+            if (communitySegment && parsed.quantity) {
+              handleSubmitTransaction(communitySegment.value, parsed.quantity);
             }
           }}
-          disabled={!communitySegment || !parsed.userAddress || isSubmitting}
+          disabled={!isValidSubmit || isSubmitting || isSearching}
         >
-          {isSubmitting ? (
+          {isSubmitting || isSearching ? (
             <svg className="spinner" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="2" x2="12" y2="6"></line>
               <line x1="12" y1="18" x2="12" y2="22"></line>
@@ -395,13 +510,18 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
             </svg>
           )}
         </button>
-        <button type="button" className="widget-cancel" onClick={onCancel} disabled={isSubmitting}>
+        <button type="button" className="widget-cancel" onClick={onCancel} disabled={isSubmitting || isSearching}>
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
       </div>
+      {isSearching && (
+        <div style={{ marginTop: '8px', color: '#60a5fa', fontSize: '0.875rem', textAlign: 'center' }}>
+          Searching for available memberships...
+        </div>
+      )}
       {submitError && (
         <div className="widget-error" style={{ marginTop: '8px', color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>
           {submitError}
@@ -410,4 +530,3 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     </div>
   );
 };
-

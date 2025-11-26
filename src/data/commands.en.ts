@@ -105,6 +105,20 @@ export const commands: Command[] = [
     related: ['view-communities', 'join-community', 'community-details'],
     category: 'Community',
   },
+  {
+    id: 'remove-member-community',
+    label: 'Remove Member from Community',
+    keywords: ['remove', 'member', 'community', 'kick', 'delete'],
+    related: ['view-communities', 'add-member-community', 'community-details'],
+    category: 'Community',
+  },
+  {
+    id: 'buy-membership',
+    label: 'Buy Membership',
+    keywords: ['buy', 'membership', 'purchase', 'acquire', 'community'],
+    related: ['create-community', 'add-member-community', 'view-communities'],
+    category: 'Community',
+  },
 ];
 
 export const defaultSuggestions: string[] = [

@@ -24,7 +24,8 @@ const TransactionAlert: React.FC<TransactionAlertProps> = ({ transaction, onClos
       // When included in block, slower progress up to 90%
       const interval = setInterval(() => {
         setLocalProgress(prev => {
-          const increment = 0.3; // Slower increment
+
+          const increment = 0.5;
           return Math.min(prev + increment, 90);
         });
       }, 1500);
@@ -40,9 +41,9 @@ const TransactionAlert: React.FC<TransactionAlertProps> = ({ transaction, onClos
       case 'pending':
         return 'bg-yellow-500';
       case 'included':
-        return 'bg-blue-500';
-      case 'finalized':
         return 'bg-green-500';
+      case 'finalized':
+        return 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600';
       case 'failed':
         return 'bg-red-500';
       default:
@@ -55,9 +56,9 @@ const TransactionAlert: React.FC<TransactionAlertProps> = ({ transaction, onClos
       case 'pending':
         return 'Sending transaction...';
       case 'included':
-        return 'Included in block';
+        return 'Transaction Successful!';
       case 'finalized':
-        return 'Finalized';
+        return 'Finalized! 🎉';
       case 'failed':
         return 'Failed';
       default:
@@ -82,8 +83,8 @@ const TransactionAlert: React.FC<TransactionAlertProps> = ({ transaction, onClos
         );
       case 'finalized':
         return (
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          <svg className="h-4 w-4 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
         );
       case 'failed':
@@ -97,11 +98,26 @@ const TransactionAlert: React.FC<TransactionAlertProps> = ({ transaction, onClos
     }
   };
 
-  const formatHash = (hash: string) => {
-    if (!hash || typeof hash !== 'string') {
+  const formatHash = (hash: string | Uint8Array) => {
+    if (!hash) {
       return 'Unknown hash';
     }
-    return `${hash.substring(0, 8)}...${hash.substring(hash.length - 8)}`;
+
+    let hexString: string;
+    if (hash instanceof Uint8Array) {
+      hexString = '0x' + Array.from(hash)
+        .map(byte => byte.toString(16).padStart(2, '0'))
+        .join('');
+    } else if (typeof hash === 'string') {
+      hexString = hash;
+    } else {
+      return 'Invalid hash';
+    }
+
+    if (hexString.length > 16) {
+      return `${hexString.substring(0, 10)}...${hexString.substring(hexString.length - 8)}`;
+    }
+    return hexString;
   };
 
   if (isCollapsed) {
@@ -142,13 +158,12 @@ const TransactionAlert: React.FC<TransactionAlertProps> = ({ transaction, onClos
           </div>
         </div>
 
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
           <div
-            className={`h-2 rounded-full transition-all duration-500 ease-out ${
-              transaction.status === 'failed' ? 'bg-red-500' :
-              transaction.status === 'finalized' ? 'bg-green-500' :
-              transaction.status === 'included' ? 'bg-blue-500' : 'bg-yellow-500'
-            }`}
+            className={`h-2 rounded-full transition-all duration-500 ease-out ${transaction.status === 'failed' ? 'bg-red-500' :
+              transaction.status === 'finalized' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-[length:200%_100%] animate-shimmer' :
+                transaction.status === 'included' ? 'bg-green-500' : 'bg-yellow-500'
+              }`}
             style={{ width: `${localProgress}%` }}
           ></div>
         </div>
