@@ -7,7 +7,7 @@ import { take } from 'rxjs/operators';
 import { kreivo } from '@polkadot-api/descriptors';
 import { useVirto } from '@/contexts/VirtoContext';
 import { useCommunities } from '@/hooks/useCommunities';
-import { ss58Address, ss58Decode, ss58Encode } from '@polkadot-labs/hdkd-helpers';
+import { ss58Decode } from '@polkadot-labs/hdkd-helpers';
 import { resolveUserAddress } from '@/utils/userResolution';
 import './Widget.css';
 import './InlineSelect.css';

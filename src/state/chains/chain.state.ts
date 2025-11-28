@@ -40,7 +40,7 @@ export const getProvider = () => {
   const source = { type: "websocket" as const, id: "localhost", endpoint: HARDCODED_ENDPOINT }
   const provider = getWebsocketProvider(source)
 
-  return withLogsRecorder((msg) => {
+  return withLogsRecorder((_msg) => {
     if (import.meta.env.DEV || getRpcLogsEnabled()) {
       // console.debug(msg)
     }
