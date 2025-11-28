@@ -3,11 +3,15 @@ import React, { useState, useEffect } from 'react';
 interface FaucetIframeProps {
   username: string;
   address: string;
+  isMatrixMember: boolean;
+  checkingMembership: boolean;
   onAccept: () => Promise<{ success: boolean; error?: string }>;
   onDecline: () => void;
 }
 
 const FaucetIframe: React.FC<FaucetIframeProps> = ({
+  isMatrixMember,
+  checkingMembership,
   onAccept,
   onDecline
 }) => {
@@ -16,7 +20,7 @@ const FaucetIframe: React.FC<FaucetIframeProps> = ({
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    // Listen for messages from parent
+
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'faucet-error') {
         setError(event.data.message || 'Failed to process welcome bonus');
@@ -35,15 +39,15 @@ const FaucetIframe: React.FC<FaucetIframeProps> = ({
     if (isLoading) return;
     setIsLoading(true);
     setError(null);
-    
+
     const result = await onAccept();
-    
+
     if (result.success) {
       setSuccess(true);
     } else {
       setError(result.error || 'Failed to process welcome bonus');
     }
-    
+
     setIsLoading(false);
   };
 
@@ -209,54 +213,99 @@ const FaucetIframe: React.FC<FaucetIframeProps> = ({
           }
         `}
       </style>
-      
+
       <div className="faucet-container">
         <h3 className="faucet-title">
           Welcome Bonus!
         </h3>
-        
-        <p className="faucet-description">
-          Congratulations! Claim your starter tokens and premium membership.
-        </p>
-        
-        <p className="faucet-benefit-note">
-          ✨ Bonus: With membership, transaction fees are free – You can verify this by checking your balance after any transaction
-        </p>
-        
-        <div className="faucet-amount">
-          10 PAS
-        </div>
-        
-        <p className="faucet-question">
-          Ready to activate your account benefits?
-        </p>
 
-        {error && (
-          <div className="faucet-error">
-            {error}
-          </div>
+        {checkingMembership ? (
+          <>
+            <p className="faucet-description">
+              Checking your Matrix membership...
+            </p>
+            <div className="faucet-amount">
+              ⏳
+            </div>
+          </>
+        ) : !isMatrixMember ? (
+          <>
+            <p className="faucet-description">
+              To claim your starter premium membership, you need to join our Matrix community first.
+            </p>
+
+            <p className="faucet-question">
+              📢 Join our Matrix Community
+            </p>
+
+            <p className="faucet-benefit-note" style={{ fontWeight: 600, color: '#006B0A', fontStyle: 'normal', marginBottom: '1.5rem' }}>
+              Click the button below to join the Kreivo community on Matrix:
+            </p>
+
+            <div className="faucet-buttons">
+              <button
+                onClick={handleDecline}
+                disabled={isLoading}
+                className="faucet-button faucet-button-decline"
+              >
+                Maybe Later
+              </button>
+
+              <button
+                onClick={() => window.open('https://matrix.to/#/#kreivo:virto.community', '_blank')}
+                className="faucet-button faucet-button-accept"
+                style={{ minWidth: '160px' }}
+              >
+                Join Matrix Channel
+              </button>
+            </div>
+
+            <p className="faucet-benefit-note" style={{ marginTop: '1rem', fontSize: '0.8rem' }}>
+              After joining, please refresh this page to claim your benefits.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="faucet-description">
+              Congratulations! Claim your starter premium membership.
+            </p>
+
+            <p className="faucet-benefit-note">
+              ✨ Bonus: With membership, transaction fees are free – You can verify this by checking your balance after any transaction
+            </p>
+
+            <p className="faucet-question">
+              Ready to activate your account benefits?
+            </p>
+
+            {error && (
+              <div className="faucet-error">
+                {error}
+              </div>
+            )}
+
+            <div className="faucet-buttons">
+              <button
+                onClick={handleDecline}
+                disabled={isLoading}
+                className="faucet-button faucet-button-decline"
+              >
+                Maybe Later
+              </button>
+
+              <button
+                onClick={handleAccept}
+                disabled={isLoading || success}
+                className={`faucet-button faucet-button-accept ${success ? 'success' : ''}`}
+              >
+                {success ? '✅ Activated!' : isLoading ? 'Processing...' : 'Claim Benefits'}
+              </button>
+            </div>
+          </>
         )}
-
-        <div className="faucet-buttons">
-          <button
-            onClick={handleDecline}
-            disabled={isLoading}
-            className="faucet-button faucet-button-decline"
-          >
-            Maybe Later
-          </button>
-          
-          <button
-            onClick={handleAccept}
-            disabled={isLoading || success}
-            className={`faucet-button faucet-button-accept ${success ? 'success' : ''}`}
-          >
-            {success ? '✅ Activated!' : isLoading ? 'Processing...' : 'Claim Benefits'}
-          </button>
-        </div>
       </div>
     </>
   );
 };
 
-export default FaucetIframe; 
+export default FaucetIframe;

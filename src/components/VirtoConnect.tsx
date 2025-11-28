@@ -1,16 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import type { VirtoConnectProps } from '@/types/auth.types';
+import { useVirto } from '@/contexts/VirtoContext';
 
 
 
 const VirtoConnect: React.FC<VirtoConnectProps> = ({
-  serverUrl = 'https://demo.virto.one/api',
-  providerUrl = 'wss://testnet.kreivo.kippu.rocks',
+  serverUrl = 'https://connect.virto.one/api',
+  providerUrl = 'wss://kreivo.io',
   onAuthSuccess,
   onAuthError,
 }) => {
   const virtoConnectRef = useRef<HTMLElement>(null);
   const connectButtonRef = useRef<HTMLElement>(null);
+  const { setSdk, setUserAddress, setUserId, setIsAuthenticated } = useVirto();
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -22,9 +24,48 @@ const VirtoConnect: React.FC<VirtoConnectProps> = ({
     return () => {
       if (document.head.contains(script)) {
         document.head.removeChild(script);
-    }
+      }
     };
   }, []);
+
+  useEffect(() => {
+    const virtoConnect = virtoConnectRef.current;
+    if (!virtoConnect) return;
+
+    let checkCount = 0;
+    const maxChecks = 40;
+
+    const checkForSdk = setInterval(() => {
+      checkCount++;
+      const virtoElement = virtoConnect as any;
+
+      if (virtoElement.sdk) {
+        console.log('VirtoConnect: SDK found, checking initialization...');
+        console.log('SDK auth:', virtoElement.sdk.auth);
+        console.log('SDK custom:', virtoElement.sdk.custom);
+
+        setSdk(virtoElement.sdk);
+
+        (window as any).virtoSdkDirect = virtoElement.sdk;
+
+        clearInterval(checkForSdk);
+        console.log('VirtoConnect: SDK saved to context successfully');
+      } else if (checkCount >= maxChecks) {
+        console.warn('VirtoConnect: SDK not found after 20 seconds');
+        clearInterval(checkForSdk);
+      }
+    }, 500);
+
+    const virtoElement = virtoConnect as any;
+    if (virtoElement.sdk) {
+      console.log('VirtoConnect: SDK already available immediately');
+      setSdk(virtoElement.sdk);
+      (window as any).virtoSdkDirect = virtoElement.sdk;
+      clearInterval(checkForSdk);
+    }
+
+    return () => clearInterval(checkForSdk);
+  }, [setSdk]);
 
   useEffect(() => {
     const virtoConnect = virtoConnectRef.current;
@@ -38,9 +79,46 @@ const VirtoConnect: React.FC<VirtoConnectProps> = ({
       }
     };
 
-    const handleAuthSuccess = (event: any) => {
-      if (onAuthSuccess && event.detail) {
-        onAuthSuccess(event.detail);
+    const handleAuthSuccess = async (event: any) => {
+      if (event.detail) {
+        console.log('VirtoConnect: Login success event received');
+
+        const virtoElement = virtoConnect as any;
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        if (virtoElement.sdk) {
+          console.log('VirtoConnect: Updating SDK in context after login');
+          console.log('SDK auth after login:', virtoElement.sdk.auth);
+
+          setSdk(virtoElement.sdk);
+          (window as any).virtoSdkDirect = virtoElement.sdk;
+
+          const userId = virtoElement.sdk.auth?.passkeysAuthenticator?.userId;
+          if (userId) {
+            setUserId(userId);
+
+            try {
+              const userInfo = await virtoElement.sdk.transfer.getUserInfo(userId);
+              if (userInfo?.address) {
+                setUserAddress(userInfo.address);
+                console.log('User address set:', userInfo.address);
+              }
+            } catch (error) {
+              console.error('Error getting user address:', error);
+            }
+          } else {
+            console.warn('No userId found after login');
+          }
+        } else {
+          console.error('SDK not found after login');
+        }
+
+        setIsAuthenticated(true);
+
+        if (onAuthSuccess) {
+          onAuthSuccess(event.detail);
+        }
       }
     };
 
@@ -72,7 +150,7 @@ const VirtoConnect: React.FC<VirtoConnectProps> = ({
         id: "connect-button",
         label: "Connect to Virto"
       })}
-      
+
       {React.createElement('virto-connect', {
         ref: virtoConnectRef,
         id: "virtoConnect",

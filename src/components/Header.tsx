@@ -17,25 +17,38 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
   useEffect(() => {
     const checkAuth = () => {
       try {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        if (isLoggedIn === 'false' || isLoggedIn === null) {
+          setIsAuthenticated(false);
+          setUsername('');
+          setUserInitial('');
+          return;
+        }
+
         const virtoUser = localStorage.getItem('virto_connected_user');
         const lastUserId = localStorage.getItem('lastUserId');
         const userId = virtoUser || lastUserId;
 
-        if (userId && userId.trim() !== '') {
+        if (userId && userId.trim() !== '' && isLoggedIn === 'true') {
           setIsAuthenticated(true);
           setUsername(userId);
           const initial = userId.charAt(0).toUpperCase();
           setUserInitial(initial);
+        } else {
+          setIsAuthenticated(false);
+          setUsername('');
+          setUserInitial('');
         }
       } catch (error) {
         console.error('Error reading from localStorage:', error);
+        setIsAuthenticated(false);
       }
     };
 
     checkAuth();
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'virto_connected_user' || e.key === 'lastUserId') {
+      if (e.key === 'virto_connected_user' || e.key === 'lastUserId' || e.key === 'isLoggedIn') {
         checkAuth();
       }
     };
@@ -59,10 +72,13 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
     const previewVirtoConnect = document.getElementById('previewVirtoConnect') as any;
 
     const handleLoginSuccess = (event: any) => {
+      console.log('handleLoginSuccess received event:', event);
       const username = event.detail?.username || event.detail?.userId || event.detail;
-      
+
       if (username) {
         const usernameStr = typeof username === 'string' ? username : String(username);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('virto_account_address', event.detail?.address);
         setIsAuthenticated(true);
         setUsername(usernameStr);
         const initial = usernameStr.charAt(0).toUpperCase();
@@ -74,9 +90,10 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
 
     const handleRegisterSuccess = (event: any) => {
       const username = event.detail?.username || event.detail?.userId || event.detail;
-      
+
       if (username) {
         const usernameStr = typeof username === 'string' ? username : String(username);
+        localStorage.setItem('isLoggedIn', 'true');
         setIsAuthenticated(true);
         setUsername(usernameStr);
         const initial = usernameStr.charAt(0).toUpperCase();
@@ -97,11 +114,17 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
     }
 
     const interval = !isAuthenticated ? setInterval(() => {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      if (isLoggedIn === 'false' || isLoggedIn === null) {
+        setIsAuthenticated(false);
+        return;
+      }
+
       const virtoUser = localStorage.getItem('virto_connected_user');
       const lastUserId = localStorage.getItem('lastUserId');
       const userId = virtoUser || lastUserId;
 
-      if (userId && userId.trim() !== '') {
+      if (userId && userId.trim() !== '' && isLoggedIn === 'true') {
         setIsAuthenticated(true);
         setUsername(userId);
         const initial = userId.charAt(0).toUpperCase();
@@ -125,6 +148,8 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
   }, [isAuthenticated]);
 
   const handleAuthSuccess = (user: User) => {
+    console.log('handleAuthSuccess received user:', user);
+    localStorage.setItem('isLoggedIn', 'true');
     setIsAuthenticated(true);
     const usernameStr = user?.profile?.name || user?.profile?.id || '';
     if (usernameStr) {
@@ -142,17 +167,18 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
   const handleLogout = () => {
     localStorage.removeItem('virto_connected_user');
     localStorage.removeItem('lastUserId');
-    
+    localStorage.setItem('isLoggedIn', 'false');
+
     setIsAuthenticated(false);
     setUserInitial('');
     setUsername('');
     setShowUserMenu(false);
-    
+
     document.dispatchEvent(new CustomEvent('virto-auth-change'));
-    
+
     const virtoConnect = document.getElementById('virtoConnect') as any;
     const previewVirtoConnect = document.getElementById('previewVirtoConnect') as any;
-    
+
     if (virtoConnect && typeof virtoConnect.close === 'function') {
       virtoConnect.close();
     }
@@ -188,13 +214,13 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
         <div className="kreivo-brand">
           <h1 className="kreivo-brand-name">Kreivo</h1>
         </div>
-        
+
         <div className="kreivo-header-right">
           {!isAuthenticated ? (
             <div className="kreivo-connect-wrapper">
               <VirtoConnect
-                serverUrl="https://demo.virto.one/api"
-                providerUrl="wss://testnet.kreivo.kippu.rocks"
+                serverUrl="https://connect.virto.one/api"
+                providerUrl="wss://kreivo.io"
                 onAuthSuccess={handleAuthSuccess}
                 onAuthError={handleAuthError}
               />
@@ -206,7 +232,7 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
                   {userInitial}
                 </div>
               </div>
-              
+
               {showUserMenu && (
                 <div className="kreivo-user-menu">
                   <div className="kreivo-user-menu-header">
@@ -219,7 +245,7 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
                     </div>
                   </div>
                   <div className="kreivo-user-menu-divider"></div>
-                  <button 
+                  <button
                     className="kreivo-user-menu-item logout"
                     onClick={handleLogout}
                   >

@@ -8,11 +8,15 @@ import './CommandSearch.css';
 interface CommandSearchProps {
   onCommandSelect?: (command: Command) => void;
   onWidgetComplete?: (command: Command, data: any) => void;
+  externalTrigger?: { commandId: string; initialData?: any } | null;
+  onExternalTriggerHandled?: () => void;
 }
 
 export const CommandSearch: React.FC<CommandSearchProps> = ({
   onCommandSelect,
   onWidgetComplete,
+  externalTrigger,
+  onExternalTriggerHandled,
 }) => {
   const { query, setQuery, results } = useFuseSearch({
     debounceMs: 150,
@@ -21,6 +25,7 @@ export const CommandSearch: React.FC<CommandSearchProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeWidget, setActiveWidget] = useState<Command | null>(null);
+  const [widgetInitialData, setWidgetInitialData] = useState<any>(null);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,7 +62,7 @@ export const CommandSearch: React.FC<CommandSearchProps> = ({
   }, [query]);
 
   const handleCommandSelect = useCallback(
-    (command: Command) => {
+    (command: Command, initialData?: any) => {
       const WidgetComponent = getWidget(command.id);
       
       setIsFocused(true);
@@ -76,6 +81,7 @@ export const CommandSearch: React.FC<CommandSearchProps> = ({
       
       if (WidgetComponent) {
         setActiveWidget(command);
+        setWidgetInitialData(initialData || null);
         setQuery('');
         setIsOpen(false);
       } else {
@@ -92,6 +98,7 @@ export const CommandSearch: React.FC<CommandSearchProps> = ({
       if (activeWidget) {
         onWidgetComplete?.(activeWidget, data);
         setActiveWidget(null);
+        setWidgetInitialData(null);
       }
     },
     [activeWidget, onWidgetComplete]
@@ -99,12 +106,28 @@ export const CommandSearch: React.FC<CommandSearchProps> = ({
 
   const handleWidgetCancel = useCallback(() => {
     setActiveWidget(null);
+    setWidgetInitialData(null);
     setQuery('');
     setIsOpen(false);
     setIsFocused(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     inputRef.current?.focus();
   }, [setQuery]);
+
+  // Handle external trigger
+  useEffect(() => {
+    if (externalTrigger) {
+      const command = { 
+        id: externalTrigger.commandId,
+        label: externalTrigger.commandId === 'send-transaction' ? 'Send Transaction' : externalTrigger.commandId,
+        keywords: [],
+        related: [],
+        category: 'Transaction'
+      };
+      handleCommandSelect(command, externalTrigger.initialData);
+      onExternalTriggerHandled?.();
+    }
+  }, [externalTrigger, handleCommandSelect, onExternalTriggerHandled]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -211,6 +234,7 @@ export const CommandSearch: React.FC<CommandSearchProps> = ({
             command={activeWidget}
             onComplete={handleWidgetComplete}
             onCancel={handleWidgetCancel}
+            initialData={widgetInitialData}
           />
         ) : (
           <>

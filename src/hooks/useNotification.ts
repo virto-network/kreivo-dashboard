@@ -11,24 +11,24 @@ const formatErrorMessage = (error: any): string => {
   if (typeof error === 'string') {
     return error;
   }
-  
+
   if (typeof error === 'object' && error !== null) {
     if (error.type && error.value && typeof error.value === 'object' && error.value.type) {
       return `Error Type: ${error.type}, Value Type: ${error.value.type}`;
     }
-    
+
     if (error.type && error.value && error.value.type) {
       return `Error Type: ${error.type}, Value Type: ${error.value.type}`;
     }
-    
+
     if (error.message) {
       return error.message;
     }
-    
+
     if (error.error) {
       return formatErrorMessage(error.error);
     }
-    
+
     // Fallback: convert to string
     try {
       return JSON.stringify(error);
@@ -36,7 +36,7 @@ const formatErrorMessage = (error: any): string => {
       return 'Unknown error occurred';
     }
   }
-  
+
   return String(error);
 };
 
@@ -46,7 +46,7 @@ export const useNotification = () => {
   const showNotification = useCallback((type: 'success' | 'error', title: string, message: string | any) => {
     const id = Date.now().toString();
     const formattedMessage = type === 'error' ? formatErrorMessage(message) : String(message);
-    
+
     const newNotification: NotificationData = {
       id,
       type,

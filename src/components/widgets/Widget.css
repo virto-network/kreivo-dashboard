@@ -4,6 +4,7 @@
   justify-content: center;
   align-items: center;
   margin: 0 auto;
+  flex-direction: column;
 }
 
 .widget-input-wrapper {
@@ -21,7 +22,7 @@
   transition: all 0.2s ease;
 }
 
-.widget-input-wrapper > * {
+.widget-input-wrapper>* {
   position: relative;
   z-index: 1;
 }
@@ -109,9 +110,24 @@
     opacity: 0;
     transform: translateY(-4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -170,4 +186,3 @@
     height: 16px;
   }
 }
-

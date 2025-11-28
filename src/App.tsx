@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { VirtoProvider } from '@/contexts/VirtoContext';
 
 // Declare custom virto elements
 declare global {
@@ -58,33 +59,35 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <Header onAuthSuccess={handleAuthSuccess} onAuthError={handleAuthError} />
-      
-      <div className="container">
-        <div className="content-section" id="content-section">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/explorer/:blockNumber" element={<BlockDetail />} />
-            <Route path="/initiatives" element={<Initiatives />} />
-            <Route path="/payments" element={<Payments />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/communities" element={<Communities />} />
-            <Route path="/discussions" element={<Discussions />} />
-          </Routes>
+    <VirtoProvider>
+      <div className="app">
+        <Header onAuthSuccess={handleAuthSuccess} onAuthError={handleAuthError} />
+
+        <div className="container">
+          <div className="content-section" id="content-section">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/explorer/:blockNumber" element={<BlockDetail />} />
+              <Route path="/initiatives" element={<Initiatives />} />
+              <Route path="/payments" element={<Payments />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/communities" element={<Communities />} />
+              <Route path="/discussions" element={<Discussions />} />
+            </Routes>
+          </div>
+
+          {/* @ts-ignore */}
+          <virto-connect
+            id="previewVirtoConnect"
+            server="https://connect.virto.one/api"
+            provider-url="wss://kreivo.io"
+            style={{ display: 'none' }}
+          />
+
+          <TransactionAlertContainer />
         </div>
-
-        {/* @ts-ignore */}
-        <virto-connect
-          id="previewVirtoConnect"
-          server="https://demo.virto.one/api"
-          provider-url="wss://testnet.kreivo.kippu.rocks"
-          style={{ display: 'none' }}
-        />
-
-        <TransactionAlertContainer />
       </div>
-    </div>
+    </VirtoProvider>
   );
 }
 

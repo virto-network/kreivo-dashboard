@@ -7,6 +7,7 @@ import { take } from 'rxjs/operators';
 import { kreivo } from '@polkadot-api/descriptors';
 import { useVirto } from '@/contexts/VirtoContext';
 import { useCommunities } from '@/hooks/useCommunities';
+import { ss58Address, ss58Decode, ss58Encode } from '@polkadot-labs/hdkd-helpers';
 import { resolveUserAddress } from '@/utils/userResolution';
 import './Widget.css';
 import './InlineSelect.css';
@@ -19,7 +20,7 @@ interface ParsedSegment {
   end: number;
 }
 
-export const AddMemberWidget: React.FC<WidgetProps> = ({
+export const RemoveMemberWidget: React.FC<WidgetProps> = ({
   onComplete,
   onCancel,
 }) => {
@@ -31,7 +32,7 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
   const [selectedCommunityIndex, setSelectedCommunityIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const { inputRef, measureRef } = useAutoResizeInput(input, '#community add member @user');
+  const { inputRef, measureRef } = useAutoResizeInput(input, '#community remove member @user');
   const containerRef = useRef<HTMLDivElement>(null);
 
   const communities = communitiesData.map(c => ({
@@ -108,7 +109,7 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     }
 
     let userAddress: string | null = null;
-    const memberMatch = text.match(/add member\s+(@?\S+)/i);
+    const memberMatch = text.match(/remove member\s+(@?\S+)/i);
     if (memberMatch) {
       userAddress = memberMatch[1].trim();
     }
@@ -129,9 +130,9 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     const parsed = parseInput(newValue, newCursorPos);
     const communitySegment = parsed.segments.find((s) => s.type === 'community');
 
-    if (communitySegment && !newValue.includes('add member')) {
+    if (communitySegment && !newValue.includes('remove member')) {
       const afterCommunity = newValue.substring(communitySegment.end);
-      if (!afterCommunity.trim().startsWith('add member')) {
+      if (!afterCommunity.trim().startsWith('remove member')) {
         const communityName = communitySegment.value;
         const hasValidCommunityName = communityName.length > 0;
         const justTypedSpace = newValue.length > oldValue.length &&
@@ -141,7 +142,7 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
         if (justTypedSpace && hasValidCommunityName) {
           const beforeCommunity = newValue.substring(0, communitySegment.end);
           const afterCommunityText = newValue.substring(communitySegment.end + 1);
-          const autoText = ' add member ';
+          const autoText = ' remove member ';
           const finalValue = beforeCommunity + autoText + afterCommunityText;
           setInput(finalValue);
           const newPos = communitySegment.end + autoText.length;
@@ -223,13 +224,19 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     setSubmitError(null);
 
     try {
-      console.log('Adding member to community:', communityName, userName);
+      console.log('Removing member from community:', communityName, userName);
 
       const { client } = await firstValueFrom(chainClient$.pipe(take(1)));
       if (!client) {
         throw new Error('Chain client not available');
       }
       const typedApi = client.getTypedApi(kreivo);
+
+      const community = communities.find(c => c.name.toLowerCase() === communityName.toLowerCase());
+      if (!community) {
+        throw new Error(`Community "${communityName}" not found`);
+      }
+      const communityIdNum = parseInt(community.id);
 
       let resolvedAddress = userName;
       if (userName.startsWith('@')) {
@@ -245,8 +252,54 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
         }
       }
 
-      const tx = typedApi.tx.Communities.add_member({
+      let membershipId: number | null = null;
+
+      try {
+        for (let itemId = 0; itemId < 100; itemId++) {
+          try {
+            const itemData = await typedApi.query.CommunityMemberships.Item.getValue(communityIdNum, itemId);
+
+            if (itemData && itemData.owner) {
+              const owner = itemData.owner;
+
+              try {
+                const [ownerBytes] = ss58Decode(owner);
+                const [userBytes] = ss58Decode(resolvedAddress);
+
+                const areEqual = ownerBytes.length === userBytes.length &&
+                  ownerBytes.every((byte, index) =>
+                    byte === userBytes[index]
+                  );
+
+                if (areEqual) {
+                  membershipId = itemId;
+                  console.log(`Found membership ID ${itemId} for user ${resolvedAddress} in community ${communityIdNum}`);
+                  break;
+                }
+              } catch (decodeError) {
+                console.warn(`Could not decode addresses for comparison at item ${itemId}:`, decodeError);
+                if (owner === resolvedAddress) {
+                  membershipId = itemId;
+                  console.log(`Found membership ID ${itemId} (direct match) for user ${resolvedAddress} in community ${communityIdNum}`);
+                  break;
+                }
+              }
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+      } catch (error) {
+        console.error('Error finding membership ID:', error);
+      }
+
+      if (membershipId === null) {
+        throw new Error(`User ${resolvedAddress} doesn't have a membership in community ${communityName}`);
+      }
+
+      const tx = typedApi.tx.Communities.remove_member({
         who: { type: "Id" as const, value: resolvedAddress },
+        membership_id: membershipId,
       });
 
       const encodedCallHex = await tx.getEncodedData();
@@ -264,6 +317,7 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
       onComplete({
         community: communityName,
         user: userName,
+        membershipId,
         fullText: input,
         txHash: txResult?.txHash || txResult?.hash || 'submitted',
         success: true
@@ -280,7 +334,7 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     if (parsed.hashtagStart !== null) {
       const before = input.substring(0, parsed.hashtagStart);
       const after = input.substring(parsed.hashtagStart + (parsed.activeHashtag?.length || 0) + 1);
-      const autoText = ' add member ';
+      const autoText = ' remove member ';
       const newInput = `${before}#${community.name}${autoText}${after}`;
       setInput(newInput);
       setShowCommunityList(false);
@@ -307,7 +361,7 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
     return (
       <div className="widget-form" ref={containerRef}>
         <div className="widget-input-wrapper">
-          <span className="widget-prefix">Add Member:</span>
+          <span className="widget-prefix">Remove Member:</span>
           <div style={{ padding: '12px', color: 'rgba(255, 255, 255, 0.6)', textAlign: 'center' }}>
             Loading communities...
           </div>
@@ -334,13 +388,13 @@ export const AddMemberWidget: React.FC<WidgetProps> = ({
         aria-hidden="true"
       />
       <div className="widget-input-wrapper">
-        <span className="widget-prefix">Add Member:</span>
+        <span className="widget-prefix">Remove Member:</span>
         <div className="inline-select-container">
           <input
             ref={inputRef}
             type="text"
             className="widget-input"
-            placeholder="#community add member @user_or_address"
+            placeholder="#community remove member @user_or_address"
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
