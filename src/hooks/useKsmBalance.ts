@@ -110,7 +110,7 @@ export const useKsmBalance = (): WalletData => {
 
         let dusdAmount = 0;
         try {
-          const assetId = { type: "Here" as const, value: 1 };
+          const assetId = { type: "Sibling" as const, value: { id: 1000, pallet: 50, index: 50000002 } };
           console.log('Querying DUSD balance with assetId:', assetId, 'address:', accountAddress);
 
           const dusdAccountData = await typedApi.query.Assets.Account.getValue(assetId, accountAddress).catch((err: any) => {

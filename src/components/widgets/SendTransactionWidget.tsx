@@ -204,7 +204,7 @@ export const SendTransactionWidget: React.FC<WidgetProps> = ({
         });
         console.log('Created KSM transfer transaction');
       } else if (selectedAsset === 'DUSD') {
-        const assetId = { type: "Here" as const, value: 1 };
+        const assetId = { type: "Sibling" as const, value: { id: 1000, pallet: 50, index: 50000002 } };
         tx = typedApi.tx.Assets.transfer_keep_alive({
           id: assetId,
           target: recipientAddress,
