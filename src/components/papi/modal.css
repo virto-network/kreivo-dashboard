@@ -2,6 +2,14 @@
 .modal {
   max-width: calc(100% - 6px - 2em);
   max-height: calc(100% - 6px - 2em);
+  position: relative;
+  z-index: 9999;
+}
+
+.modal > * {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 dialog.modal[open] {
@@ -37,6 +45,7 @@ dialog.modal::backdrop {
 
 dialog.modal[open]::backdrop {
   opacity: 1;
+  pointer-events: auto;
 }
 
 /* This starting-style rule cannot be nested inside the above selector

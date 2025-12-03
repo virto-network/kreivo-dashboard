@@ -1,5 +1,5 @@
 import { PathsRoot, setHovered } from "@/codec-components/common/paths.state"
-import { Enum } from "@/components/Icons"
+import { Enum } from "@/components/papi/Icons"
 import { isComplex } from "@/utils/shape"
 import { EditEnum, NOTIN } from "@polkadot-api/react-builder"
 import { useContext, useLayoutEffect, useState } from "react"

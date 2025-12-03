@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom/client';
 import VirtoConnect from '@/components/VirtoConnect';
+import FaucetIframe from '@/components/FaucetIframe';
+import { useNotification } from '@/hooks/useNotification';
 import type { User } from '@/types/auth.types';
 import './Header.css';
 
@@ -13,6 +16,7 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
   const [userInitial, setUserInitial] = useState<string>('');
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [username, setUsername] = useState<string>('');
+  const { showSuccessNotification, showErrorNotification } = useNotification();
 
   useEffect(() => {
     const checkAuth = () => {
@@ -69,7 +73,8 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
 
   useEffect(() => {
     const virtoConnect = document.getElementById('virtoConnect') as any;
-    const previewVirtoConnect = document.getElementById('previewVirtoConnect') as any;
+    
+    if (!virtoConnect) return;
 
     const handleLoginSuccess = (event: any) => {
       console.log('handleLoginSuccess received event:', event);
@@ -103,15 +108,114 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
       }
     };
 
-    if (virtoConnect) {
-      virtoConnect.addEventListener('login-success', handleLoginSuccess);
-      virtoConnect.addEventListener('register-success', handleRegisterSuccess);
-    }
+    const handleLoginError = (event: any) => {
+      const error = event.detail?.error;
+      console.log('Login error received:', error);
+      
+      if (error) {
+        const errorString = error.toString ? error.toString() : JSON.stringify(error);
+        
+        const isPaymentError = errorString.includes('InvalidTxError') && 
+                              errorString.includes('"type": "Invalid"') && 
+                              errorString.includes('"type": "Payment"');
+        
+        if (isPaymentError) {
+          console.log('Payment error detected, showing faucet again');
+          
+          const usernameInput = virtoConnect.shadowRoot?.querySelector('virto-input[name="username"]');
+          const username = usernameInput?.value || '';
+          
+          if (username) {
+            virtoConnect.showFaucetConfirmation(username);
+          }
+        }
+      }
+    };
 
-    if (previewVirtoConnect) {
-      previewVirtoConnect.addEventListener('login-success', handleLoginSuccess);
-      previewVirtoConnect.addEventListener('register-success', handleRegisterSuccess);
-    }
+    const handleFaucetIframeReady = async (event: CustomEvent) => {
+      console.log('Faucet iframe ready:', event.detail);
+      const { username, address, virtoConnectElement } = event.detail;
+      
+      const container = virtoConnectElement.getFaucetContainer();
+      if (!container) {
+        console.error('Faucet container not found');
+        return;
+      }
+
+      let isMatrixMember = false;
+      let checkingMembership = true;
+
+      try {
+        const response = await fetch(`https://connect.virto.one/api/matrix/check-member?username=${encodeURIComponent(username)}`);
+        if (response.ok) {
+          const data = await response.json();
+          isMatrixMember = data.isMember || false;
+          console.log('Matrix membership check:', isMatrixMember);
+        } else {
+          console.warn('Matrix membership check failed');
+        }
+      } catch (error) {
+        console.warn('Error checking Matrix membership:', error);
+      } finally {
+        checkingMembership = false;
+      }
+
+      const root = ReactDOM.createRoot(container);
+      
+      const handleAccept = async () => {
+        try {
+          const sdk = virtoConnect.sdk;
+          if (!sdk) {
+            throw new Error('SDK not available');
+          }
+          
+          console.log('Calling addMember for user:', username);
+          const faucetResult = await sdk.auth.addMember(username);
+          console.log('Faucet successful:', faucetResult);
+          
+          showSuccessNotification("Welcome Bonus Processed!", "Your $100 welcome bonus has been successfully processed.");
+          
+          setTimeout(() => {
+            root.unmount();
+            virtoConnectElement.completeFaucetFlowFromParent(true, faucetResult);
+          }, 1500);
+          
+          return { success: true };
+          
+        } catch (error) {
+          console.error('Faucet failed:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Failed to process welcome bonus';
+          showErrorNotification("Welcome Bonus Failed", errorMessage);
+          return { success: false, error: errorMessage };
+        }
+      };
+
+      const handleDecline = () => {
+        console.log('Faucet declined');
+        root.unmount();
+        virtoConnectElement.completeFaucetFlowFromParent(false);
+      };
+
+      root.render(
+        <FaucetIframe
+          username={username}
+          address={address}
+          isMatrixMember={isMatrixMember}
+          checkingMembership={checkingMembership}
+          onAccept={handleAccept}
+          onDecline={handleDecline}
+        />
+      );
+
+      virtoConnectElement.faucetCleanup = () => {
+        root.unmount();
+      };
+    };
+
+    virtoConnect.addEventListener('login-success', handleLoginSuccess);
+    virtoConnect.addEventListener('register-success', handleRegisterSuccess);
+    virtoConnect.addEventListener('login-error', handleLoginError);
+    virtoConnect.addEventListener('faucet-iframe-ready', handleFaucetIframeReady);
 
     const interval = !isAuthenticated ? setInterval(() => {
       const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -133,19 +237,20 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
     }, 2000) : null;
 
     return () => {
-      if (virtoConnect) {
-        virtoConnect.removeEventListener('login-success', handleLoginSuccess);
-        virtoConnect.removeEventListener('register-success', handleRegisterSuccess);
+      virtoConnect.removeEventListener('login-success', handleLoginSuccess);
+      virtoConnect.removeEventListener('register-success', handleRegisterSuccess);
+      virtoConnect.removeEventListener('login-error', handleLoginError);
+      virtoConnect.removeEventListener('faucet-iframe-ready', handleFaucetIframeReady);
+      
+      if (virtoConnect.faucetCleanup) {
+        virtoConnect.faucetCleanup();
       }
-      if (previewVirtoConnect) {
-        previewVirtoConnect.removeEventListener('login-success', handleLoginSuccess);
-        previewVirtoConnect.removeEventListener('register-success', handleRegisterSuccess);
-      }
+      
       if (interval) {
         clearInterval(interval);
       }
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, showSuccessNotification, showErrorNotification]);
 
   const handleAuthSuccess = (user: User) => {
     console.log('handleAuthSuccess received user:', user);

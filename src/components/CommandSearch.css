@@ -241,6 +241,392 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
+.command-search-extrinsic-menu-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.command-search-extrinsic-menu-button {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(107, 70, 193, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+  border: 1px solid rgba(107, 70, 193, 0.3);
+  border-radius: 9999px;
+  color: #ded0f1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-primary, 'Outfit', sans-serif);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
+
+.command-search-extrinsic-menu-button:hover {
+  background: linear-gradient(135deg, rgba(107, 70, 193, 0.25) 0%, rgba(124, 58, 237, 0.25) 100%);
+  border-color: #6B46C1;
+  color: white;
+  box-shadow: 0 0 20px rgba(107, 70, 193, 0.3);
+}
+
+.command-search-extrinsic-menu-button:active {
+  transform: scale(0.98);
+}
+
+.command-search-extrinsic-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.command-search-extrinsic-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  font-family: var(--font-primary, 'Outfit', sans-serif);
+}
+
+.command-search-extrinsic-menu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.command-search-extrinsic-menu-item svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.command-search-extrinsic-editor {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 32px;
+  background: linear-gradient(180deg, rgba(18, 33, 30, 0.95) 0%, rgba(15, 26, 24, 0.98) 100%);
+  border: 1px solid rgba(107, 70, 193, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  animation: slideDown 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(107, 70, 193, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.command-search-extrinsic-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(107, 70, 193, 0.15);
+}
+
+.command-search-extrinsic-editor-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ded0f1;
+  margin: 0;
+  font-family: var(--font-primary, 'Outfit', sans-serif);
+  text-shadow: 0 2px 8px rgba(107, 70, 193, 0.2);
+}
+
+.command-search-extrinsic-editor-close {
+  background: rgba(107, 70, 193, 0.1);
+  border: 1px solid rgba(107, 70, 193, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+  color: rgba(222, 208, 241, 0.8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.command-search-extrinsic-editor-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  transform: rotate(90deg);
+}
+
+.command-search-extrinsic-editor-content {
+  width: 100%;
+  min-height: 500px;
+}
+
+/* Apply dark theme to inline editor */
+.command-search-extrinsic-editor-content [data-radix-popover-content],
+.command-search-extrinsic-editor-content [cmdk-root] {
+  background: rgba(31, 41, 55, 0.95) !important;
+  border: 1px solid rgba(107, 70, 193, 0.3) !important;
+  color: #ded0f1 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(107, 70, 193, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.command-search-extrinsic-editor-content [cmdk-input-wrapper] {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(107, 70, 193, 0.2) !important;
+}
+
+.command-search-extrinsic-editor-content [cmdk-input] {
+  background: transparent !important;
+  color: #ded0f1 !important;
+}
+
+.command-search-extrinsic-editor-content [cmdk-input]::placeholder {
+  color: rgba(222, 208, 241, 0.5) !important;
+}
+
+.command-search-extrinsic-editor-content [cmdk-item] {
+  color: #ded0f1 !important;
+  transition: all 0.15s ease;
+}
+
+.command-search-extrinsic-editor-content [cmdk-item]:hover {
+  background: rgba(107, 70, 193, 0.15) !important;
+}
+
+.command-search-extrinsic-editor-content [cmdk-item][data-selected="true"],
+.command-search-extrinsic-editor-content [cmdk-item][aria-selected="true"] {
+  background: rgba(107, 70, 193, 0.2) !important;
+  color: #ded0f1 !important;
+}
+
+.command-search-extrinsic-editor-content [cmdk-group-heading] {
+  color: rgba(222, 208, 241, 0.7) !important;
+}
+
+.extrinsic-modal-content {
+  min-width: 90vw;
+  max-width: 1200px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+  background: #12211E !important;
+  border: 1px solid #263333 !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-content * {
+  pointer-events: auto;
+}
+
+.extrinsic-modal-dark {
+  background: #12211E !important;
+  border: 1px solid #263333 !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-wrapper {
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  max-height: calc(90vh - 60px);
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.extrinsic-modal-wrapper * {
+  pointer-events: auto;
+}
+
+.extrinsic-modal-wrapper > div {
+  overflow: visible !important;
+}
+
+.extrinsic-modal-wrapper > div {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  z-index: 1 !important;
+  pointer-events: auto !important;
+}
+
+.extrinsic-modal-wrapper > div > div {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  height: auto !important;
+  z-index: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure popovers and selects inside modal have higher z-index */
+.extrinsic-modal-wrapper [data-radix-popper-content-wrapper],
+.extrinsic-modal-wrapper [role="dialog"],
+.extrinsic-modal-wrapper [data-radix-popover-content] {
+  z-index: 9999 !important;
+}
+
+/* Dark theme overrides for modal content */
+.extrinsic-modal-dark,
+.extrinsic-modal-dark * {
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark [data-radix-popover-content],
+.extrinsic-modal-dark [cmdk-root] {
+  background: #1F2937 !important;
+  border-color: #263333 !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark [cmdk-input-wrapper] {
+  background: #1F2937 !important;
+  border-color: #263333 !important;
+  border-bottom: 1px solid #263333 !important;
+}
+
+.extrinsic-modal-dark [cmdk-input] {
+  background: transparent !important;
+  color: #ded0f1 !important;
+  border-color: #263333 !important;
+}
+
+.extrinsic-modal-dark [cmdk-input]::placeholder {
+  color: rgba(222, 208, 241, 0.5) !important;
+}
+
+.extrinsic-modal-dark [cmdk-input]::-webkit-input-placeholder {
+  color: rgba(222, 208, 241, 0.5) !important;
+}
+
+.extrinsic-modal-dark [cmdk-input]::-moz-placeholder {
+  color: rgba(222, 208, 241, 0.5) !important;
+}
+
+.extrinsic-modal-dark [cmdk-input]:-ms-input-placeholder {
+  color: rgba(222, 208, 241, 0.5) !important;
+}
+
+.extrinsic-modal-dark [cmdk-item] {
+  color: #ded0f1 !important;
+  background: transparent !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.extrinsic-modal-dark [cmdk-item]:hover:not([data-selected="true"]):not([data-selected='true']):not([aria-selected="true"]) {
+  background: rgba(28, 63, 48, 0.4) !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark [cmdk-item][data-selected="true"],
+.extrinsic-modal-dark [cmdk-item][data-selected='true'],
+.extrinsic-modal-dark [cmdk-item][aria-selected="true"] {
+  background: #1c3f30 !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark [cmdk-item][data-selected="true"]:hover,
+.extrinsic-modal-dark [cmdk-item][data-selected='true']:hover {
+  background: #2d4a3a !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark button[data-radix-toggle-group-item] {
+  background: #1F2937 !important;
+  border-color: #263333 !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark button[data-radix-toggle-group-item][data-state="on"] {
+  background: rgba(72, 187, 120, 0.2) !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark button[role="combobox"],
+.extrinsic-modal-dark button[aria-expanded] {
+  background: #1F2937 !important;
+  border-color: #263333 !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark button[role="combobox"]:hover,
+.extrinsic-modal-dark button[aria-expanded]:hover {
+  background: #2d4a3a !important;
+  border-color: #48BB78 !important;
+}
+
+/* Input field in Select button */
+.extrinsic-modal-dark button[role="combobox"] span {
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark button[role="combobox"] span.opacity-80 {
+  color: rgba(222, 208, 241, 0.8) !important;
+}
+
+/* Command component dark theme */
+.extrinsic-modal-dark [cmdk-group-heading] {
+  color: rgba(222, 208, 241, 0.7) !important;
+}
+
+.extrinsic-modal-dark [cmdk-empty] {
+  color: rgba(222, 208, 241, 0.6) !important;
+}
+
+.extrinsic-modal-dark svg[class*="lucide-Search"],
+.extrinsic-modal-dark [cmdk-input-wrapper] svg {
+  color: rgba(222, 208, 241, 0.5) !important;
+}
+
+/* Ensure all Command elements have dark theme */
+.extrinsic-modal-dark [cmdk-root] {
+  background: #1F2937 !important;
+  color: #ded0f1 !important;
+}
+
+.extrinsic-modal-dark [cmdk-list] {
+  background: #1F2937 !important;
+}
+
+.extrinsic-modal-dark [cmdk-group] {
+  background: #1F2937 !important;
+  color: #ded0f1 !important;
+}
+
+/* Check icon in selected items */
+.extrinsic-modal-dark [cmdk-item] svg {
+  color: #48BB78 !important;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .prompt-section {
@@ -279,6 +665,44 @@
     padding: 6px 12px;
     font-size: 0.8rem;
   }
+
+  .command-search-extrinsic-menu-button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    height: auto;
+  }
+
+  .command-search-extrinsic-dropdown-menu {
+    min-width: 180px;
+  }
+
+  .command-search-extrinsic-menu-item {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .command-search-extrinsic-editor {
+    padding: 16px;
+    margin-top: 24px;
+  }
+
+  .command-search-extrinsic-editor-title {
+    font-size: 1.25rem;
+  }
+
+  .command-search-extrinsic-editor-content {
+    min-height: 400px;
+  }
+
+  .extrinsic-modal-content {
+    min-width: 95vw;
+    max-height: 95vh;
+  }
+
+  .extrinsic-modal-wrapper {
+    min-height: 400px;
+    max-height: calc(95vh - 60px);
+  }
 }
 
 @media (max-width: 480px) {
@@ -301,6 +725,24 @@
   .command-search-droplet {
     padding: 6px 10px;
     font-size: 0.75rem;
+  }
+
+  .command-search-extrinsic-menu-button {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  .command-search-extrinsic-editor {
+    padding: 12px;
+    margin-top: 16px;
+  }
+
+  .command-search-extrinsic-editor-title {
+    font-size: 1.1rem;
+  }
+
+  .command-search-extrinsic-editor-content {
+    min-height: 350px;
   }
 }
 

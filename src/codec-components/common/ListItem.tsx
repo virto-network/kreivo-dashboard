@@ -1,4 +1,4 @@
-import { ExpandBtn } from "@/components/Expand"
+import { ExpandBtn } from "@/components/papi/Expand"
 import { useStateObservable } from "@react-rxjs/core"
 import { Dot, Trash2 } from "lucide-react"
 import { ReactNode, useContext } from "react"

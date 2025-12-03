@@ -1,7 +1,7 @@
-import { getBytesFormat } from "@/components/BinaryInput"
+import { getBytesFormat } from "@/components/papi/BinaryInput"
 import { ViewBytes } from "@polkadot-api/react-builder"
 import { useReportBinary } from "./CopyBinary"
-import { SwitchBinary } from "@/components/Icons"
+import { SwitchBinary } from "@/components/papi/Icons"
 import { useState } from "react"
 
 export const CBytes: ViewBytes = ({ value, encodedValue }) => {

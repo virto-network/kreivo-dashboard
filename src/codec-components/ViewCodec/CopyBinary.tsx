@@ -1,4 +1,4 @@
-import { CopyText } from "@/components/Copy"
+import { CopyText } from "@/components/papi/Copy"
 import { Binary } from "polkadot-api"
 import {
   createContext,

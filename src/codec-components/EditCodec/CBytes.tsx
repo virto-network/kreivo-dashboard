@@ -1,5 +1,5 @@
 import { EditBytes } from "@polkadot-api/react-builder"
-import { BinaryInput } from "@/components/BinaryInput"
+import { BinaryInput } from "@/components/papi/BinaryInput"
 
 export const CBytes: EditBytes = ({ value, onValueChanged, len }) => (
   <BinaryInput 

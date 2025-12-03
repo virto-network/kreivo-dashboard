@@ -8,7 +8,7 @@ import {
   NOTIN,
 } from "@polkadot-api/react-builder"
 import { TextInputField } from "./codec-components"
-import { useSynchronizeInput } from "@/components/useSynchroniseInput"
+import { useSynchronizeInput } from "@/components/papi/useSynchroniseInput"
 
 const NumericEdit =
   <T extends number | bigint>(

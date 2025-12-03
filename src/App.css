@@ -2155,12 +2155,13 @@ body {
 }
 
 .success-notification {
-  background-color: var(--white);
-  color: var(--dark-green);
-  border-left: 4px solid var(--green);
+  background-color: #1F2937;
+  color: #ded0f1;
+  border: 1px solid #263333;
+  border-left: 4px solid #48BB78;
   padding: 16px 20px;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -2170,12 +2171,13 @@ body {
 }
 
 .error-notification {
-  background-color: var(--white);
-  color: #d32f2f;
-  border-left: 4px solid #d32f2f;
+  background-color: #1F2937;
+  color: #ded0f1;
+  border: 1px solid #263333;
+  border-left: 4px solid #ef4444;
   padding: 16px 20px;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -2215,11 +2217,12 @@ body {
 .success-title {
   font-weight: 600;
   font-size: 1rem;
+  color: #ded0f1;
 }
 
 .success-message {
   font-size: 0.9rem;
-  color: var(--darkslategray);
+  color: rgba(222, 208, 241, 0.8);
 }
 
 @keyframes slide-in {

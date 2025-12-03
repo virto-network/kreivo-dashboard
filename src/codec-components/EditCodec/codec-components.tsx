@@ -1,4 +1,4 @@
-import SliderToggle from "@/components/Toggle"
+import SliderToggle from "@/components/papi/Toggle"
 import {
   EditArray,
   EditBool,
