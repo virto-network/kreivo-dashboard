@@ -1,4 +1,3 @@
-
 import { LookupEntry } from "@polkadot-api/metadata-builders"
 import {
   Ban,
@@ -20,7 +19,6 @@ import binarySvg from "./icons/binary.svg"
 import enumSvg from "./icons/enum.svg"
 import focusSvg from "./icons/focus.svg"
 import switchBinarySvg from "./icons/switch_binary.svg"
-
 
 type CustomIconProps = Omit<Props, "ref" | "src"> & { size?: number }
 const CustomIcon: FC<
@@ -53,14 +51,11 @@ const customIcon = (url: string) => (props: CustomIconProps) => (
   <CustomIcon url={url} {...props} />
 )
 
-
-
 export const Focus = customIcon(focusSvg)
 export const Enum = customIcon(enumSvg)
 export const BinaryEdit = customIcon(binarySvg)
 
 export const SwitchBinary = customIcon(switchBinarySvg)
-
 
 export const Spinner = (props: LucideProps) => (
   <LoaderCircle

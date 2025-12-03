@@ -11,7 +11,7 @@
   font-weight: 700;
   color: #ded0f1;
   line-height: 1.2;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
   margin-bottom: 4px;
 }
 
@@ -118,7 +118,6 @@
   position: relative;
   z-index: 10;
 }
-
 
 .wallet-dropdown-menu {
   position: absolute;
@@ -366,13 +365,12 @@
   .wallet-small-number {
     font-size: 0.85rem;
   }
-  
+
   .wallet-modal {
     width: 95%;
   }
-  
+
   .wallet-modal-body {
     padding: 20px;
   }
 }
-

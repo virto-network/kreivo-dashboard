@@ -7,9 +7,7 @@ import { withSubscribe } from "@/components/papi/withSuspense"
 import { useNotification } from "@/hooks/useNotification"
 import { useSpinner } from "@/hooks/useSpinner"
 
-import {
-  localRuntimeCtx$,
-} from "@/state/chains/chain.state"
+import { localRuntimeCtx$ } from "@/state/chains/chain.state"
 import {
   CodecComponentType,
   CodecComponentValue,
@@ -41,18 +39,28 @@ const extrinsicProps$ = state(
 )
 
 export interface ExtrinsicsProps {
-  onSend?: (encodedCallHex: string) => void;
-  isLoading?: boolean;
-  setIsLoading?: (loading: boolean) => void;
+  onSend?: (encodedCallHex: string) => void
+  isLoading?: boolean
+  setIsLoading?: (loading: boolean) => void
 }
 
-const ExtrinsicsInner: React.FC<ExtrinsicsProps> = ({ onSend, isLoading = false, setIsLoading }) => {
+const ExtrinsicsInner: React.FC<ExtrinsicsProps> = ({
+  onSend,
+  isLoading = false,
+  setIsLoading,
+}) => {
   const [viewMode, setViewMode] = useState<"edit" | "json">("edit")
-  const [error, setError] = useState<string>('')
+  const [error, setError] = useState<string>("")
   const extrinsicProps = useStateObservable(extrinsicProps$)
 
-  const { notifications, showSuccessNotification, showErrorNotification, removeNotification } = useNotification()
-  const { isSpinnerVisible, spinnerText, showSpinner, hideSpinner } = useSpinner()
+  const {
+    notifications,
+    showSuccessNotification,
+    showErrorNotification,
+    removeNotification,
+  } = useNotification()
+  const { isSpinnerVisible, spinnerText, showSpinner, hideSpinner } =
+    useSpinner()
 
   const [componentValue, setComponentValue] = useState<CodecComponentValue>({
     type: CodecComponentType.Initial,
@@ -80,23 +88,29 @@ const ExtrinsicsInner: React.FC<ExtrinsicsProps> = ({ onSend, isLoading = false,
 
   const handleSendExtrinsic = async (encodedCallHex: string) => {
     if (!encodedCallHex) {
-      setError('No encoded call data available')
-      showErrorNotification("Validation Error", "No encoded call data available")
+      setError("No encoded call data available")
+      showErrorNotification(
+        "Validation Error",
+        "No encoded call data available",
+      )
       return
     }
 
     if (setIsLoading) setIsLoading(true)
-    setError('')
-    showSpinner('Sending transaction...')
+    setError("")
+    showSpinner("Sending transaction...")
 
     try {
       if (onSend) {
         await onSend(encodedCallHex)
-        showSuccessNotification("Transaction Sent!", "Your custom extrinsic has been submitted successfully.")
+        showSuccessNotification(
+          "Transaction Sent!",
+          "Your custom extrinsic has been submitted successfully.",
+        )
       }
     } catch (err: any) {
-      const errorMsg = `Failed to send transaction: ${err?.message || 'Please try again'}`
-      console.error('Custom transaction failed:', err)
+      const errorMsg = `Failed to send transaction: ${err?.message || "Please try again"}`
+      console.error("Custom transaction failed:", err)
       setError(errorMsg)
       showErrorNotification("Transaction Error", errorMsg)
     } finally {
@@ -114,7 +128,6 @@ const ExtrinsicsInner: React.FC<ExtrinsicsProps> = ({ onSend, isLoading = false,
         "extrinsics-container",
       )}
     >
-
       <BinaryDisplay
         {...extrinsicProps}
         value={componentValue}
@@ -141,14 +154,14 @@ const ExtrinsicsInner: React.FC<ExtrinsicsProps> = ({ onSend, isLoading = false,
         />
         <button
           type="button"
-          className={`extrinsic-send-button ${!encodedHex || isLoading ? 'disabled' : ''}`}
+          className={`extrinsic-send-button ${!encodedHex || isLoading ? "disabled" : ""}`}
           disabled={!encodedHex || isLoading}
           onClick={() => {
             if (!encodedHex || isLoading) return
             handleSendExtrinsic(encodedHex)
           }}
         >
-          {isLoading ? 'Sending...' : 'Send'}
+          {isLoading ? "Sending..." : "Send"}
         </button>
       </div>
 
@@ -181,11 +194,8 @@ const ExtrinsicsInner: React.FC<ExtrinsicsProps> = ({ onSend, isLoading = false,
         notifications={notifications}
         onRemoveNotification={removeNotification}
       />
-      
-      <Spinner
-        isVisible={isSpinnerVisible}
-        text={spinnerText}
-      />
+
+      <Spinner isVisible={isSpinnerVisible} text={spinnerText} />
     </div>
   )
 }

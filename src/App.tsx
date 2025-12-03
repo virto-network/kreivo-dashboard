@@ -1,68 +1,78 @@
-import { Routes, Route } from 'react-router-dom';
-import { VirtoProvider } from '@/contexts/VirtoContext';
+import { Routes, Route } from "react-router-dom"
+import { VirtoProvider } from "@/contexts/VirtoContext"
 
 // Declare custom virto elements
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'virto-connect': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        id?: string;
-        server?: string;
-        'provider-url'?: string;
-        style?: React.CSSProperties;
-      };
-      'virto-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        id?: string;
-        label?: string;
-        variant?: string;
-        disabled?: boolean;
-        loading?: boolean;
-        onClick?: (event: React.MouseEvent<HTMLElement>) => void;
-      };
-      'virto-input': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        id?: string;
-        type?: string;
-        placeholder?: string;
-        value?: string;
-        disabled?: boolean;
-        label?: string;
-        onInput?: (event: any) => void;
-      };
+      "virto-connect": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        id?: string
+        server?: string
+        "provider-url"?: string
+        style?: React.CSSProperties
+      }
+      "virto-button": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        id?: string
+        label?: string
+        variant?: string
+        disabled?: boolean
+        loading?: boolean
+        onClick?: (event: React.MouseEvent<HTMLElement>) => void
+      }
+      "virto-input": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        id?: string
+        type?: string
+        placeholder?: string
+        value?: string
+        disabled?: boolean
+        label?: string
+        onInput?: (event: any) => void
+      }
     }
   }
 }
-import TransactionAlertContainer from '@/components/TransactionAlertContainer';
-import Header from '@/components/Header';
-import { useTransactionListener } from '@/hooks/useTransactionListener';
-import type { User } from '@/types/auth.types';
-import BlockDetail from '@/pages/Explorer/BlockDetail';
-import Initiatives from '@/pages/Initiatives';
-import Payments from '@/pages/Payments';
-import Marketplace from '@/pages/Marketplace';
-import Communities from '@/pages/Communities';
-import Discussions from '@/pages/Discussions';
-import Index from '@/pages/Index';
-import './App.css';
-
-
+import TransactionAlertContainer from "@/components/TransactionAlertContainer"
+import Header from "@/components/Header"
+import { useTransactionListener } from "@/hooks/useTransactionListener"
+import type { User } from "@/types/auth.types"
+import BlockDetail from "@/pages/Explorer/BlockDetail"
+import Initiatives from "@/pages/Initiatives"
+import Payments from "@/pages/Payments"
+import Marketplace from "@/pages/Marketplace"
+import Communities from "@/pages/Communities"
+import Discussions from "@/pages/Discussions"
+import Index from "@/pages/Index"
+import "./App.css"
 
 function App() {
   // Initialize transaction listener
-  useTransactionListener();
+  useTransactionListener()
 
   const handleAuthSuccess = (user: User) => {
-    console.log('Authentication successful:', user);
-  };
+    console.log("Authentication successful:", user)
+  }
 
   const handleAuthError = (error: string) => {
-    console.error('Authentication error:', error);
-  };
+    console.error("Authentication error:", error)
+  }
 
   return (
     <VirtoProvider>
       <div className="app">
-        <Header onAuthSuccess={handleAuthSuccess} onAuthError={handleAuthError} />
+        <Header
+          onAuthSuccess={handleAuthSuccess}
+          onAuthError={handleAuthError}
+        />
 
         <div className="container">
           <div className="content-section" id="content-section">
@@ -81,7 +91,7 @@ function App() {
         </div>
       </div>
     </VirtoProvider>
-  );
+  )
 }
 
-export default App; 
+export default App

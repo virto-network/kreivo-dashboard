@@ -3,7 +3,7 @@ import { EditEthAccount, NOTIN } from "@polkadot-api/react-builder"
 export const CEthAccount: EditEthAccount = ({ value, onValueChanged }) => {
   return (
     <div className="space-y-2">
-      <input 
+      <input
         type="text"
         className="w-full p-2 border rounded font-mono text-sm"
         placeholder="Enter ETH address (0x...)..."

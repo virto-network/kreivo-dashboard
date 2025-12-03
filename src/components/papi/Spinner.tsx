@@ -1,12 +1,15 @@
-import React from 'react';
+import React from "react"
 
 interface SpinnerProps {
-  isVisible: boolean;
-  text?: string;
+  isVisible: boolean
+  text?: string
 }
 
-const Spinner: React.FC<SpinnerProps> = ({ isVisible, text = "Processing..." }) => {
-  if (!isVisible) return null;
+const Spinner: React.FC<SpinnerProps> = ({
+  isVisible,
+  text = "Processing...",
+}) => {
+  if (!isVisible) return null
 
   return (
     <div id="spinner" className="spinner-overlay">
@@ -15,7 +18,7 @@ const Spinner: React.FC<SpinnerProps> = ({ isVisible, text = "Processing..." }) 
         <div className="spinner-icon"></div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Spinner; 
+export default Spinner

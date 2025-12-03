@@ -75,161 +75,161 @@ const BinaryEditModalContent: FC<
   onValueChange,
   onClose,
 }) => {
-    const [value, setValue] = useState(initialValue)
-    const [error, setError] = useState("")
-    const [inputValue, setInputValue] = useGenericSynchronizeInput(
-      value,
-      setValue as any,
-      (input) => parseInput(input).asBytes(),
-      "" as string | Uint8Array,
-      (value) => {
-        if (value.length > MAX_DISPLAY_SIZE) return ""
-        return Binary.fromBytes(value).asHex()
-      },
-      (input, value) =>
-        checkEqualInputBinary(
-          parseInput(input),
-          value === NOTIN ? NOTIN : Binary.fromBytes(value),
-        ),
-    )
+  const [value, setValue] = useState(initialValue)
+  const [error, setError] = useState("")
+  const [inputValue, setInputValue] = useGenericSynchronizeInput(
+    value,
+    setValue as any,
+    (input) => parseInput(input).asBytes(),
+    "" as string | Uint8Array,
+    (value) => {
+      if (value.length > MAX_DISPLAY_SIZE) return ""
+      return Binary.fromBytes(value).asHex()
+    },
+    (input, value) =>
+      checkEqualInputBinary(
+        parseInput(input),
+        value === NOTIN ? NOTIN : Binary.fromBytes(value),
+      ),
+  )
 
-    const placeholder =
-      value.length > MAX_DISPLAY_SIZE ? "(value is too long to display)" : ""
-    const safeDecode = (value: Uint8Array) => {
-      try {
-        return decode(value)
-      } catch (_) {
-        return NOTIN
-      }
+  const placeholder =
+    value.length > MAX_DISPLAY_SIZE ? "(value is too long to display)" : ""
+  const safeDecode = (value: Uint8Array) => {
+    try {
+      return decode(value)
+    } catch (_) {
+      return NOTIN
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const isValid = useMemo(() => safeDecode(value) !== NOTIN, [value, decode])
-    const textareaValue = inputValue instanceof Uint8Array ? "" : inputValue
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const isValid = useMemo(() => safeDecode(value) !== NOTIN, [value, decode])
+  const textareaValue = inputValue instanceof Uint8Array ? "" : inputValue
 
-    const submit = () => {
-      const decoded = safeDecode(value)
-      if (decoded !== NOTIN) {
-        onValueChange(decoded)
-        onClose()
-      } else {
-        // Shouldn't happen, but it's better than just swallowing that it failed.
-        setError("Couldn't set the binary data 😢")
-      }
+  const submit = () => {
+    const decoded = safeDecode(value)
+    if (decoded !== NOTIN) {
+      onValueChange(decoded)
+      onClose()
+    } else {
+      // Shouldn't happen, but it's better than just swallowing that it failed.
+      setError("Couldn't set the binary data 😢")
     }
+  }
 
-    const validateFile = (file: File) => {
-      if (file.size > 512 * 1024 * 1024) {
-        setError("File size can't exceed 512MB")
-        return false
-      }
-      return true
+  const validateFile = (file: File) => {
+    if (file.size > 512 * 1024 * 1024) {
+      setError("File size can't exceed 512MB")
+      return false
     }
+    return true
+  }
 
-    const downloadDisabled = value.length === 0
-    const download = () => {
-      saveAs(
-        new Blob([value], {
-          type: "application/octet-stream",
-        }),
-        `${fileName ?? new Date().toISOString()}.dat`,
-      )
-    }
-
-    return (
-      <>
-        <div className="flex gap-4">
-          <div className="flex-1 flex gap-2">
-            <button
-              disabled={downloadDisabled}
-              className={twMerge(
-                "flex items-center gap-1 border rounded py-1 px-2",
-                downloadDisabled && "opacity-50 pointer-events-none",
-              )}
-              style={{
-                background: '#1F2937',
-                borderColor: '#263333',
-                color: '#ded0f1'
-              }}
-              onMouseEnter={(e) => {
-                if (!downloadDisabled) {
-                  e.currentTarget.style.background = '#2d4a3a';
-                  e.currentTarget.style.borderColor = '#48BB78';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#1F2937';
-                e.currentTarget.style.borderColor = '#263333';
-              }}
-              onClick={download}
-            >
-              <Download size={16} />
-              Download
-            </button>
-          </div>
-          <div>
-            <label
-              className="flex items-center gap-1 cursor-pointer border rounded py-1 px-2"
-              style={{
-                background: '#1F2937',
-                borderColor: '#263333',
-                color: '#ded0f1'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#2d4a3a';
-                e.currentTarget.style.borderColor = '#48BB78';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#1F2937';
-                e.currentTarget.style.borderColor = '#263333';
-              }}
-            >
-              Load file
-              <FileUp size={16} />
-              <BinaryFileInput
-                validate={validateFile}
-                onError={() => setError("Error loading file")}
-                onLoaded={(value) => setValue(value.asBytes())}
-              />
-            </label>
-          </div>
-        </div>
-        <div>
-          <div style={{ color: '#ded0f1' }}>
-            Hex data{isValid ? ` (${value.length} bytes)` : ""}
-          </div>
-          <textarea
-            className={twMerge(
-              "rounded w-full min-h-20 p-1 tabular-nums border-2",
-              !isValid && "border-red-600 outline-hidden",
-            )}
-            style={{
-              background: '#1F2937',
-              borderColor: isValid ? '#263333' : '#ef4444',
-              color: '#ded0f1'
-            }}
-            value={textareaValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={placeholder}
-          />
-        </div>
-        <ActionButton
-          onClick={submit}
-          disabled={!isValid}
-          style={{
-            background: !isValid ? '#1F2937' : '#1c3f30',
-            borderColor: !isValid ? '#263333' : '#48BB78',
-            color: '#ded0f1',
-            border: '1px solid',
-            borderRadius: '8px',
-            padding: '10px 20px'
-          }}
-        >
-          OK
-        </ActionButton>
-        {error && <p style={{ color: '#ef4444' }}>{error}</p>}
-      </>
+  const downloadDisabled = value.length === 0
+  const download = () => {
+    saveAs(
+      new Blob([value], {
+        type: "application/octet-stream",
+      }),
+      `${fileName ?? new Date().toISOString()}.dat`,
     )
   }
+
+  return (
+    <>
+      <div className="flex gap-4">
+        <div className="flex-1 flex gap-2">
+          <button
+            disabled={downloadDisabled}
+            className={twMerge(
+              "flex items-center gap-1 border rounded py-1 px-2",
+              downloadDisabled && "opacity-50 pointer-events-none",
+            )}
+            style={{
+              background: "#1F2937",
+              borderColor: "#263333",
+              color: "#ded0f1",
+            }}
+            onMouseEnter={(e) => {
+              if (!downloadDisabled) {
+                e.currentTarget.style.background = "#2d4a3a"
+                e.currentTarget.style.borderColor = "#48BB78"
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#1F2937"
+              e.currentTarget.style.borderColor = "#263333"
+            }}
+            onClick={download}
+          >
+            <Download size={16} />
+            Download
+          </button>
+        </div>
+        <div>
+          <label
+            className="flex items-center gap-1 cursor-pointer border rounded py-1 px-2"
+            style={{
+              background: "#1F2937",
+              borderColor: "#263333",
+              color: "#ded0f1",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#2d4a3a"
+              e.currentTarget.style.borderColor = "#48BB78"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#1F2937"
+              e.currentTarget.style.borderColor = "#263333"
+            }}
+          >
+            Load file
+            <FileUp size={16} />
+            <BinaryFileInput
+              validate={validateFile}
+              onError={() => setError("Error loading file")}
+              onLoaded={(value) => setValue(value.asBytes())}
+            />
+          </label>
+        </div>
+      </div>
+      <div>
+        <div style={{ color: "#ded0f1" }}>
+          Hex data{isValid ? ` (${value.length} bytes)` : ""}
+        </div>
+        <textarea
+          className={twMerge(
+            "rounded w-full min-h-20 p-1 tabular-nums border-2",
+            !isValid && "border-red-600 outline-hidden",
+          )}
+          style={{
+            background: "#1F2937",
+            borderColor: isValid ? "#263333" : "#ef4444",
+            color: "#ded0f1",
+          }}
+          value={textareaValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder={placeholder}
+        />
+      </div>
+      <ActionButton
+        onClick={submit}
+        disabled={!isValid}
+        style={{
+          background: !isValid ? "#1F2937" : "#1c3f30",
+          borderColor: !isValid ? "#263333" : "#48BB78",
+          color: "#ded0f1",
+          border: "1px solid",
+          borderRadius: "8px",
+          padding: "10px 20px",
+        }}
+      >
+        OK
+      </ActionButton>
+      {error && <p style={{ color: "#ef4444" }}>{error}</p>}
+    </>
+  )
+}
 
 const parseInput = (value: string | Uint8Array) =>
   value instanceof Uint8Array

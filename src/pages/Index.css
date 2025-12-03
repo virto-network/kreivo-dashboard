@@ -32,14 +32,16 @@
 }
 
 .dashboard-box {
-  background: #12211E;
+  background: #12211e;
   border: 1px solid #263333;
   border-radius: 12px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   height: 100%;
 }
 
@@ -59,7 +61,7 @@
   font-weight: 600;
   color: #ded0f1;
   margin: 0;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
 }
 
 .dashboard-box-icon {
@@ -95,17 +97,16 @@
   backdrop-filter: blur(2px);
 }
 
-.dashboard-box-content:has(.coming-soon-banner)>*:not(.coming-soon-banner) {
+.dashboard-box-content:has(.coming-soon-banner) > *:not(.coming-soon-banner) {
   padding: 4px 8px;
 }
-
 
 .balance-total {
   font-size: 2rem;
   font-weight: 700;
   color: #ded0f1;
   margin-bottom: 16px;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
 }
 
 .balance-assets {
@@ -122,7 +123,6 @@
 .asset-amount {
   font-weight: 500;
 }
-
 
 .explorer-main {
   display: flex;
@@ -147,7 +147,7 @@
 
 .explorer-finalized {
   font-size: 0.85rem;
-  color: #A0AEC0;
+  color: #a0aec0;
 }
 
 .explorer-blocks-grid {
@@ -218,7 +218,7 @@
 }
 
 .explorer-block-square.visible:hover::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: calc(100% + 2px);
   left: 50%;
@@ -324,7 +324,6 @@
   white-space: nowrap;
 }
 
-
 .initiative-list {
   display: flex;
   flex-direction: column;
@@ -357,7 +356,6 @@
   transition: width 0.3s ease;
 }
 
-
 .payment-list {
   display: flex;
   flex-direction: column;
@@ -387,7 +385,7 @@
 
 .payment-time {
   font-size: 0.8rem;
-  color: #A0AEC0;
+  color: #a0aec0;
 }
 
 .payment-amount {
@@ -395,7 +393,6 @@
   font-weight: 600;
   white-space: nowrap;
 }
-
 
 .marketplace-grid {
   display: grid;
@@ -406,7 +403,7 @@
 .marketplace-item {
   display: flex;
   flex-direction: column;
-  background: #1F2937;
+  background: #1f2937;
   border-radius: 12px;
   overflow: hidden;
   padding: 0;
@@ -439,10 +436,9 @@
 
 .marketplace-item-price {
   font-size: 0.8rem;
-  color: #A0AEC0;
+  color: #a0aec0;
   font-weight: 600;
 }
-
 
 .community-list {
   display: flex;
@@ -454,7 +450,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #1F2937;
+  background: #1f2937;
   border-radius: 8px;
   padding: 12px;
 }
@@ -482,7 +478,7 @@
 
 .community-members {
   font-size: 0.8rem;
-  color: #A0AEC0;
+  color: #a0aec0;
 }
 
 .community-indicator {
@@ -491,7 +487,6 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
-
 
 .discussion-list {
   display: flex;
@@ -551,7 +546,6 @@
   height: 14px;
 }
 
-
 @media (max-width: 1200px) {
   .dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -600,8 +594,6 @@
   }
 }
 
-
-
 .prompt-search-icon {
   position: absolute;
   right: 16px;
@@ -628,7 +620,7 @@
   color: rgba(255, 255, 255, 0.9);
   font-size: 0.9rem;
   font-weight: 500;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -707,7 +699,7 @@
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
 }
 
 .communities-menu-item:hover {

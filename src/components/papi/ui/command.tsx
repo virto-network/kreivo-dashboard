@@ -17,8 +17,8 @@ const Command = React.forwardRef<
       className,
     )}
     style={{
-      background: '#1F2937',
-      color: '#ded0f1'
+      background: "#1F2937",
+      color: "#ded0f1",
     }}
     {...props}
   />
@@ -43,17 +43,17 @@ const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
-  <div 
-    className="flex items-center border-b px-3" 
+  <div
+    className="flex items-center border-b px-3"
     cmdk-input-wrapper=""
     style={{
-      borderColor: '#263333',
-      background: '#1F2937'
+      borderColor: "#263333",
+      background: "#1F2937",
     }}
   >
-    <Search 
-      className="mr-2 h-4 w-4 shrink-0 opacity-50" 
-      style={{ color: 'rgba(222, 208, 241, 0.5)' }}
+    <Search
+      className="mr-2 h-4 w-4 shrink-0 opacity-50"
+      style={{ color: "rgba(222, 208, 241, 0.5)" }}
     />
     <CommandPrimitive.Input
       ref={ref}
@@ -62,8 +62,8 @@ const CommandInput = React.forwardRef<
         className,
       )}
       style={{
-        color: '#ded0f1',
-        background: 'transparent'
+        color: "#ded0f1",
+        background: "transparent",
       }}
       {...props}
     />
@@ -141,7 +141,7 @@ const CommandItem = React.forwardRef<
       className,
     )}
     style={{
-      color: '#ded0f1'
+      color: "#ded0f1",
     }}
     {...props}
   />

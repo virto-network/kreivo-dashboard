@@ -1,15 +1,15 @@
-import React from 'react';
-import Notification from './Notification';
-import { NotificationData } from '../hooks/useNotification';
+import React from "react"
+import Notification from "./Notification"
+import { NotificationData } from "../hooks/useNotification"
 
 interface NotificationContainerProps {
-  notifications: NotificationData[];
-  onRemoveNotification: (id: string) => void;
+  notifications: NotificationData[]
+  onRemoveNotification: (id: string) => void
 }
 
 const NotificationContainer: React.FC<NotificationContainerProps> = ({
   notifications,
-  onRemoveNotification
+  onRemoveNotification,
 }) => {
   return (
     <div className="notification-container">
@@ -18,7 +18,7 @@ const NotificationContainer: React.FC<NotificationContainerProps> = ({
           key={notification.id}
           style={{
             transform: `translateY(${index * 10}px)`,
-            zIndex: 10000 - index
+            zIndex: 10000 - index,
           }}
         >
           <Notification
@@ -30,7 +30,7 @@ const NotificationContainer: React.FC<NotificationContainerProps> = ({
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default NotificationContainer; 
+export default NotificationContainer

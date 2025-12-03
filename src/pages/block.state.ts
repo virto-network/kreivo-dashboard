@@ -122,12 +122,7 @@ export const [blockInfo$, recordedBlocks$] = partitionByKey(
             NEVER,
           ),
       ),
-      takeUntil(
-        merge(
-          client$.pipe(skip(1)),
-          timer(60 * 60 * 1000),
-        ),
-      ),
+      takeUntil(merge(client$.pipe(skip(1)), timer(60 * 60 * 1000))),
     ),
 )
 
@@ -384,5 +379,4 @@ const getBlockStatus$ = (
 const getBlockDiff$ = (
   _parent: string,
   _hash: string,
-): Observable<Record<string, [string | null, string | null]> | null> =>
-  of(null)
+): Observable<Record<string, [string | null, string | null]> | null> => of(null)

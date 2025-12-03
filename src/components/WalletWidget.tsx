@@ -1,54 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { useKsmBalance } from '@/hooks/useKsmBalance';
-import { useNotification } from '@/hooks/useNotification';
-import { useVirto } from '@/contexts/VirtoContext';
-import './WalletWidget.css';
+import React, { useState, useEffect } from "react"
+import { useKsmBalance } from "@/hooks/useKsmBalance"
+import { useNotification } from "@/hooks/useNotification"
+import { useVirto } from "@/contexts/VirtoContext"
+import "./WalletWidget.css"
 
 interface WalletWidgetProps {
-  onTransferClick?: (asset: 'KSM' | 'DUSD') => void;
+  onTransferClick?: (asset: "KSM" | "DUSD") => void
 }
 
-export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) => {
-  const { ksmBalance, dusdBalance, totalUsdValue, ksmPrice, isLoading, error } = useKsmBalance();
-  const { isAuthenticated: virtoAuthenticated } = useVirto();
-  const [showBreakdown, setShowBreakdown] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
-  const [showTransferModal, setShowTransferModal] = useState(false);
-  const [transferAsset, setTransferAsset] = useState<'KSM' | 'DUSD' | null>(null);
-  const { showSuccessNotification } = useNotification();
+export const WalletWidget: React.FC<WalletWidgetProps> = ({
+  onTransferClick,
+}) => {
+  const { ksmBalance, dusdBalance, totalUsdValue, ksmPrice, isLoading, error } =
+    useKsmBalance()
+  const { isAuthenticated: virtoAuthenticated } = useVirto()
+  const [showBreakdown, setShowBreakdown] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
+  const [showTransferModal, setShowTransferModal] = useState(false)
+  const [transferAsset, setTransferAsset] = useState<"KSM" | "DUSD" | null>(
+    null,
+  )
+  const { showSuccessNotification } = useNotification()
 
   useEffect(() => {
-    if (!showMenu) return;
+    if (!showMenu) return
 
     const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.wallet-menu-container')) {
-        setShowMenu(false);
+      const target = e.target as HTMLElement
+      if (!target.closest(".wallet-menu-container")) {
+        setShowMenu(false)
       }
-    };
+    }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showMenu]);
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [showMenu])
 
-  const ksmAmount = Number(ksmBalance) / 1e12; // KSM has 12 decimals
+  const ksmAmount = Number(ksmBalance) / 1e12 // KSM has 12 decimals
 
   const formatNumber = (num: number, decimals: number = 2): string => {
-    return num.toLocaleString('en-US', {
+    return num.toLocaleString("en-US", {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
-    });
-  };
+    })
+  }
 
   const formatLargeNumber = (num: number): string => {
     if (num >= 1000000) {
-      return `$${(num / 1000000).toFixed(2)}M`;
+      return `$${(num / 1000000).toFixed(2)}M`
     }
     if (num >= 1000) {
-      return `$${(num / 1000).toFixed(2)}K`;
+      return `$${(num / 1000).toFixed(2)}K`
     }
-    return `$${formatNumber(num)}`;
-  };
+    return `$${formatNumber(num)}`
+  }
 
   if (error) {
     return (
@@ -57,7 +62,7 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
           <p>Error loading wallet: {error}</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (!virtoAuthenticated) {
@@ -66,7 +71,17 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
         <div className="dashboard-box-header">
           <h3 className="dashboard-box-title">Wallet</h3>
           <div className="dashboard-box-icon" style={{ opacity: 0.3 }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="12" cy="12" r="1"></circle>
               <circle cx="12" cy="5" r="1"></circle>
               <circle cx="12" cy="19" r="1"></circle>
@@ -81,19 +96,18 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  const handleTransferClick = (asset: 'KSM' | 'DUSD') => {
-    setShowMenu(false);
+  const handleTransferClick = (asset: "KSM" | "DUSD") => {
+    setShowMenu(false)
     if (onTransferClick) {
-      onTransferClick(asset);
+      onTransferClick(asset)
     } else {
-
-      setTransferAsset(asset);
-      setShowTransferModal(true);
+      setTransferAsset(asset)
+      setShowTransferModal(true)
     }
-  };
+  }
 
   return (
     <div className="dashboard-box">
@@ -104,9 +118,24 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
             className="dashboard-box-icon"
             onClick={() => setShowMenu(!showMenu)}
             title="Wallet actions"
-            style={{ cursor: 'pointer', background: 'transparent', border: 'none', padding: 0 }}
+            style={{
+              cursor: "pointer",
+              background: "transparent",
+              border: "none",
+              padding: 0,
+            }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="12" cy="12" r="1"></circle>
               <circle cx="12" cy="5" r="1"></circle>
               <circle cx="12" cy="19" r="1"></circle>
@@ -118,9 +147,19 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
             <div className="wallet-dropdown-menu">
               <button
                 className="wallet-menu-item"
-                onClick={() => handleTransferClick('KSM')}
+                onClick={() => handleTransferClick("KSM")}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <polyline points="19 12 12 19 5 12"></polyline>
                 </svg>
@@ -128,9 +167,19 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
               </button>
               <button
                 className="wallet-menu-item"
-                onClick={() => handleTransferClick('DUSD')}
+                onClick={() => handleTransferClick("DUSD")}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <polyline points="19 12 12 19 5 12"></polyline>
                 </svg>
@@ -153,7 +202,7 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
           <div
             className="wallet-small-number"
             onClick={() => setShowBreakdown(!showBreakdown)}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           >
             {isLoading ? (
               <span className="wallet-loading-small">...</span>
@@ -163,20 +212,27 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
                   <div className="wallet-breakdown">
                     <div className="wallet-breakdown-item">
                       <span className="wallet-breakdown-label">KSM:</span>
-                      <span className="wallet-breakdown-value">{formatNumber(ksmAmount, 4)}</span>
+                      <span className="wallet-breakdown-value">
+                        {formatNumber(ksmAmount, 4)}
+                      </span>
                     </div>
                     <div className="wallet-breakdown-item">
                       <span className="wallet-breakdown-label">DUSD:</span>
-                      <span className="wallet-breakdown-value">{formatNumber(dusdBalance, 2)}</span>
+                      <span className="wallet-breakdown-value">
+                        {formatNumber(dusdBalance, 2)}
+                      </span>
                     </div>
                     <div className="wallet-breakdown-item">
                       <span className="wallet-breakdown-label">Price:</span>
-                      <span className="wallet-breakdown-value">${formatNumber(ksmPrice, 2)}</span>
+                      <span className="wallet-breakdown-value">
+                        ${formatNumber(ksmPrice, 2)}
+                      </span>
                     </div>
                   </div>
                 ) : (
                   <span className="wallet-compact">
-                    {formatNumber(ksmAmount, 4)} KSM • ${formatNumber(dusdBalance, 2)} DUSD
+                    {formatNumber(ksmAmount, 4)} KSM • $
+                    {formatNumber(dusdBalance, 2)} DUSD
                   </span>
                 )}
               </>
@@ -187,7 +243,10 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
 
       {/* Transfer Modal */}
       {showTransferModal && transferAsset && (
-        <div className="wallet-modal-overlay" onClick={() => setShowTransferModal(false)}>
+        <div
+          className="wallet-modal-overlay"
+          onClick={() => setShowTransferModal(false)}
+        >
           <div className="wallet-modal" onClick={(e) => e.stopPropagation()}>
             <div className="wallet-modal-header">
               <h3>Transfer {transferAsset}</h3>
@@ -195,7 +254,17 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
                 className="wallet-modal-close"
                 onClick={() => setShowTransferModal(false)}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -223,7 +292,11 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
                     <span className="wallet-asset-label">{transferAsset}</span>
                   </div>
                   <div className="wallet-balance-info">
-                    Available: {transferAsset === 'KSM' ? formatNumber(ksmAmount, 4) : formatNumber(dusdBalance, 2)} {transferAsset}
+                    Available:{" "}
+                    {transferAsset === "KSM"
+                      ? formatNumber(ksmAmount, 4)
+                      : formatNumber(dusdBalance, 2)}{" "}
+                    {transferAsset}
                   </div>
                 </div>
                 <div className="wallet-form-actions">
@@ -236,8 +309,11 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
                   <button
                     className="wallet-button wallet-button-primary"
                     onClick={() => {
-                      showSuccessNotification('Transfer Initiated', `Your ${transferAsset} transfer is being processed`);
-                      setShowTransferModal(false);
+                      showSuccessNotification(
+                        "Transfer Initiated",
+                        `Your ${transferAsset} transfer is being processed`,
+                      )
+                      setShowTransferModal(false)
                     }}
                   >
                     Send
@@ -249,6 +325,5 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
         </div>
       )}
     </div>
-  );
-};
-
+  )
+}

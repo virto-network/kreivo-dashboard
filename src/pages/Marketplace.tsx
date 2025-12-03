@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react"
 
 const Marketplace: React.FC = () => {
   return (
@@ -6,8 +6,7 @@ const Marketplace: React.FC = () => {
       <h1>Marketplace</h1>
       <p>This is the Marketplace page</p>
     </div>
-  );
-};
+  )
+}
 
-export default Marketplace;
-
+export default Marketplace
