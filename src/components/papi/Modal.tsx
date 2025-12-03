@@ -73,9 +73,14 @@ export const Modal: FC<ModalProps> = ({
   if (isDialogCompatible) {
     return (
       <dialog
-        className="modal rounded backdrop:backdrop-blur-[2px] backdrop:backdrop-contrast-75 flex flex-col overflow-hidden border-popover-foreground bg-popover text-popover-foreground"
+        className="modal extrinsic-modal-dark rounded backdrop:backdrop-blur-[2px] backdrop:backdrop-contrast-75 flex flex-col overflow-hidden"
         ref={setRef}
         onClose={onClose}
+        style={{
+          background: '#12211E',
+          border: '1px solid #263333',
+          color: '#ded0f1'
+        }}
       >
         <ModalRefContext.Provider value={ref}>
           {content}
@@ -106,13 +111,27 @@ const ModalPolyfill: FC<ModalProps> = ({ open, children, onClose }) => {
 
   return (
     <div
-      className="z-50 fixed left-0 top-0 w-full h-full backdrop-blur-[1px] bg-background/10 flex items-center justify-center overflow-hidden"
+      className="z-[9998] fixed left-0 top-0 w-full h-full backdrop-blur-sm bg-black/60 flex items-center justify-center overflow-hidden"
       onScroll={(evt) => {
         evt.stopPropagation()
         evt.preventDefault()
       }}
+      onClick={(e) => {
+        // Close modal when clicking on backdrop
+        if (e.target === e.currentTarget) {
+          onClose?.()
+        }
+      }}
     >
-      <div className="modal rounded bg-popover text-popover-foreground flex flex-col overflow-hidden">
+      <div 
+        className="modal extrinsic-modal-dark rounded flex flex-col overflow-hidden z-[9999] relative shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: '#12211E',
+          border: '1px solid #263333',
+          color: '#ded0f1'
+        }}
+      >
         {children}
       </div>
     </div>
@@ -127,17 +146,32 @@ const ModalContent: FC<
   }>
 > = ({ title, onClose, children, className }) => (
   <>
-    <div className="px-2 py-1 border-b flex overflow-hidden min-w-[10rem] shrink-0">
-      <div className="flex-1 flex font-bold">{title}</div>
+    <div 
+      className="px-4 py-3 border-b flex overflow-hidden min-w-[10rem] shrink-0"
+      style={{
+        borderColor: '#263333'
+      }}
+    >
+      <div className="flex-1 flex font-bold" style={{ color: '#ded0f1' }}>{title}</div>
       <button
         type="button"
-        className="shrink-0 text-card-foreground/70 "
+        className="shrink-0"
         onClick={onClose}
+        style={{
+          color: '#ded0f1',
+          opacity: 0.7,
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          transition: 'opacity 0.2s ease'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
       >
         <XSquare />
       </button>
     </div>
-    <div className={twMerge("p-2 flex flex-col overflow-auto", className)}>
+    <div className={twMerge("p-4 flex flex-col overflow-auto", className)} style={{ background: '#12211E', color: '#ded0f1' }}>
       {children}
     </div>
   </>

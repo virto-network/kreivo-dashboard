@@ -1,9 +1,9 @@
 import { BinaryDisplay } from "@/codec-components/LookupTypeEdit"
-import { ButtonGroup } from "@/components/ButtonGroup"
-import { LoadingMetadata } from "@/components/Loading"
+import { ButtonGroup } from "@/components/papi/ButtonGroup"
+import { LoadingMetadata } from "@/components/papi/Loading"
 import NotificationContainer from "@/components/NotificationContainer"
-import Spinner from "@/components/Spinner"
-import { withSubscribe } from "@/components/withSuspense"
+import Spinner from "@/components/papi/Spinner"
+import { withSubscribe } from "@/components/papi/withSuspense"
 import { useNotification } from "@/hooks/useNotification"
 import { useSpinner } from "@/hooks/useSpinner"
 
@@ -21,6 +21,7 @@ import { map } from "rxjs"
 import { twMerge } from "tailwind-merge"
 import { EditMode } from "./EditMode"
 import { JsonMode } from "./JsonMode"
+import "./Extrinsics.css"
 
 const extrinsicProps$ = state(
   localRuntimeCtx$.pipe(
@@ -110,6 +111,7 @@ const ExtrinsicsInner: React.FC<ExtrinsicsProps> = ({ onSend, isLoading = false,
         "flex flex-col h-full overflow-hidden gap-2 p-4 pb-0",
         // Bypassing top-level scroll area, since we need a specific scroll area for the tree view
         "absolute w-full max-w-[88%] max-h-[65%]",
+        "extrinsics-container",
       )}
     >
 

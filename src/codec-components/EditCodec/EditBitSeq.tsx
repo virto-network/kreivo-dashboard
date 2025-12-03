@@ -1,6 +1,6 @@
 import { type EditBitSeq, NOTIN } from "@polkadot-api/react-builder"
 import { TextInputField } from "./codec-components"
-import { useGenericSynchronizeInput } from "@/components/useSynchroniseInput"
+import { useGenericSynchronizeInput } from "@/components/papi/useSynchroniseInput"
 
 const getValidation = (value: string) =>
   !!value.match(/^[01]+$/) ? null : `Only "0" and "1" allowed`

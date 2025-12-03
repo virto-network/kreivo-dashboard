@@ -1,5 +1,5 @@
-import { useHeightObserver } from "@/components/useHeightObserver"
-import { useRefEffect } from "@/components/useRefEffect"
+import { useHeightObserver } from "@/components/papi/useHeightObserver"
+import { useRefEffect } from "@/components/papi/useRefEffect"
 import {
   createContext,
   FC,

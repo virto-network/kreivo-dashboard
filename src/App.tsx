@@ -76,14 +76,6 @@ function App() {
             </Routes>
           </div>
 
-          {/* @ts-ignore */}
-          <virto-connect
-            id="previewVirtoConnect"
-            server="https://connect.virto.one/api"
-            provider-url="wss://kreivo.io"
-            style={{ display: 'none' }}
-          />
-
           <TransactionAlertContainer />
         </div>
       </div>

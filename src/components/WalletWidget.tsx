@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
 import { useKsmBalance } from '@/hooks/useKsmBalance';
-import VirtoConnect from '@/components/VirtoConnect';
-import FaucetIframe from '@/components/FaucetIframe';
 import { useNotification } from '@/hooks/useNotification';
 import { useVirto } from '@/contexts/VirtoContext';
 import './WalletWidget.css';
@@ -13,193 +10,12 @@ interface WalletWidgetProps {
 
 export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) => {
   const { ksmBalance, dusdBalance, totalUsdValue, ksmPrice, isLoading, error } = useKsmBalance();
-  const { isAuthenticated: virtoAuthenticated, setUserAddress, setIsAuthenticated } = useVirto();
+  const { isAuthenticated: virtoAuthenticated } = useVirto();
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [transferAsset, setTransferAsset] = useState<'KSM' | 'DUSD' | null>(null);
-  const { showSuccessNotification, showErrorNotification } = useNotification();
-
-  useEffect(() => {
-    const virtoConnect = document.getElementById('virtoConnect') as any;
-
-    if (!virtoConnect) return;
-
-    const handleLoginSuccess = async (event: any) => {
-      const username = event.detail?.username || event.detail?.userId || event.detail;
-      if (username) {
-        const virtoConnect = document.getElementById('virtoConnect') as any;
-        if (virtoConnect?.sdk) {
-          try {
-            const { address } = await virtoConnect.sdk.transfer.getUserInfo(virtoConnect.sdk.auth.passkeysAuthenticator.userId);
-            if (address) {
-              localStorage.setItem('virto_account_address', address);
-              console.log('Address saved from SDK:', address);
-            }
-          } catch (error) {
-            console.error('Error getting address from SDK:', error);
-          }
-        }
-
-        localStorage.setItem('isLoggedIn', 'true');
-        setIsAuthenticated(true);
-        document.dispatchEvent(new CustomEvent('virto-auth-change'));
-      }
-    };
-
-    const handleRegisterSuccess = async (event: any) => {
-      const username = event.detail?.username || event.detail?.userId || event.detail;
-      if (username) {
-        const virtoConnect = document.getElementById('virtoConnect') as any;
-        if (virtoConnect?.sdk) {
-          try {
-            const { address } = await virtoConnect.sdk.transfer.getUserInfo(virtoConnect.sdk.auth.passkeysAuthenticator.userId);
-            if (address) {
-              localStorage.setItem('virto_account_address', address);
-              console.log('Address saved from SDK:', address);
-            }
-          } catch (error) {
-            console.error('Error getting address from SDK:', error);
-          }
-        }
-
-        localStorage.setItem('isLoggedIn', 'true');
-        setIsAuthenticated(true);
-        document.dispatchEvent(new CustomEvent('virto-auth-change'));
-      }
-    };
-
-    virtoConnect.addEventListener('login-success', handleLoginSuccess);
-    virtoConnect.addEventListener('register-success', handleRegisterSuccess);
-
-    return () => {
-      virtoConnect.removeEventListener('login-success', handleLoginSuccess);
-      virtoConnect.removeEventListener('register-success', handleRegisterSuccess);
-    };
-  }, []);
-
-  useEffect(() => {
-    const virtoConnect = document.getElementById('virtoConnect') as any;
-
-    if (!virtoConnect) return;
-
-    const handleLoginError = (event: CustomEvent) => {
-      const error = event.detail?.error;
-      console.log('Login error received:', error);
-
-      if (error) {
-        const errorString = error.toString ? error.toString() : JSON.stringify(error);
-
-        const isPaymentError = errorString.includes('InvalidTxError') &&
-          errorString.includes('"type": "Invalid"') &&
-          errorString.includes('"type": "Payment"');
-
-        if (isPaymentError) {
-          console.log('Payment error detected, showing faucet again');
-
-          const usernameInput = virtoConnect.shadowRoot?.querySelector('virto-input[name="username"]');
-          const username = usernameInput?.value || '';
-
-          if (username) {
-            virtoConnect.showFaucetConfirmation(username);
-          }
-        }
-      }
-    };
-
-    const handleFaucetIframeReady = async (event: CustomEvent) => {
-      console.log('Faucet iframe ready:', event.detail);
-      const { username, address, virtoConnectElement } = event.detail;
-
-      const container = virtoConnectElement.getFaucetContainer();
-      if (!container) {
-        console.error('Faucet container not found');
-        return;
-      }
-
-      let isMatrixMember = false;
-      let checkingMembership = true;
-
-      try {
-        const response = await fetch(`https://connect.virto.one/api/matrix/check-member?username=${encodeURIComponent(username)}`);
-        if (response.ok) {
-          const data = await response.json();
-          isMatrixMember = data.isMember || false;
-          console.log('Matrix membership check:', isMatrixMember);
-        } else {
-          console.warn('Matrix membership check failed');
-        }
-      } catch (error) {
-        console.warn('Error checking Matrix membership:', error);
-      } finally {
-        checkingMembership = false;
-      }
-
-      const root = ReactDOM.createRoot(container);
-
-      const handleAccept = async () => {
-        try {
-          const sdk = virtoConnect.sdk;
-          if (!sdk) {
-            throw new Error('SDK not available');
-          }
-
-          console.log('Calling addMember for user:', username);
-
-          const faucetResult = await sdk.auth.addMember(username);
-          console.log('Faucet successful:', faucetResult);
-
-          showSuccessNotification("Welcome Bonus Processed!", "Your $100 welcome bonus has been successfully processed.");
-
-          setTimeout(() => {
-            root.unmount();
-            virtoConnectElement.completeFaucetFlowFromParent(true, faucetResult);
-          }, 1500);
-
-          return { success: true };
-
-        } catch (error) {
-          console.error('Faucet failed:', error);
-          const errorMessage = error instanceof Error ? error.message : 'Failed to process welcome bonus';
-          showErrorNotification("Welcome Bonus Failed", errorMessage);
-          return { success: false, error: errorMessage };
-        }
-      };
-
-      const handleDecline = () => {
-        console.log('Faucet declined');
-        root.unmount();
-        virtoConnectElement.completeFaucetFlowFromParent(false);
-      };
-
-      root.render(
-        <FaucetIframe
-          username={username}
-          address={address}
-          isMatrixMember={isMatrixMember}
-          checkingMembership={checkingMembership}
-          onAccept={handleAccept}
-          onDecline={handleDecline}
-        />
-      );
-
-      virtoConnectElement.faucetCleanup = () => {
-        root.unmount();
-      };
-    };
-
-    virtoConnect.addEventListener('login-error', handleLoginError);
-    virtoConnect.addEventListener('faucet-iframe-ready', handleFaucetIframeReady);
-
-    return () => {
-      virtoConnect.removeEventListener('login-error', handleLoginError);
-      virtoConnect.removeEventListener('faucet-iframe-ready', handleFaucetIframeReady);
-
-      if (virtoConnect.faucetCleanup) {
-        virtoConnect.faucetCleanup();
-      }
-    };
-  }, [showSuccessNotification, showErrorNotification]);
+  const { showSuccessNotification } = useNotification();
 
   useEffect(() => {
     if (!showMenu) return;
@@ -260,31 +76,7 @@ export const WalletWidget: React.FC<WalletWidgetProps> = ({ onTransferClick }) =
         <div className="dashboard-box-content">
           <div className="wallet-no-account">
             <div className="wallet-no-account-content">
-              <p className="wallet-no-account-text">Connect your wallet to view balance</p>
-              <div className="wallet-connect-button-wrapper">
-                <VirtoConnect
-                  serverUrl="https://connect.virto.one/api"
-                  providerUrl="wss://kreivo.io"
-                  onAuthSuccess={(user: any) => {
-                    console.log('onAuthSuccess received user:', user);
-
-                    const address = user?.address || user?.profile?.address || user?.metadata?.address;
-
-                    if (address) {
-                      setUserAddress(address);
-                      console.log('Address saved:', address);
-                    } else {
-                      console.warn('No address found in onAuthSuccess user object:', user);
-                    }
-
-                    setIsAuthenticated(true);
-
-                  }}
-                  onAuthError={(error) => {
-                    console.error('Auth error:', error);
-                  }}
-                />
-              </div>
+              <p className="wallet-no-account-text">Connect to view balance</p>
             </div>
           </div>
         </div>

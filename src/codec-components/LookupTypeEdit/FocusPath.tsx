@@ -1,4 +1,4 @@
-import { lookupToType, TypeIcon, TypeIcons } from "@/components/Icons"
+import { lookupToType, TypeIcon, TypeIcons } from "@/components/papi/Icons"
 import { getLookupFn, Var } from "@polkadot-api/metadata-builders"
 import { UnifiedMetadata } from "@polkadot-api/substrate-bindings"
 import { FC, ReactElement } from "react"

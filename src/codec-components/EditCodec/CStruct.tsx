@@ -1,4 +1,4 @@
-import { ExpandBtn } from "@/components/Expand"
+import { ExpandBtn } from "@/components/papi/Expand"
 import { getFinalType } from "@/utils/shape"
 import { EditStruct } from "@polkadot-api/react-builder"
 import { useStateObservable } from "@react-rxjs/core"

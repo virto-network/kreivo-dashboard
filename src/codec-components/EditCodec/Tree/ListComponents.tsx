@@ -1,5 +1,5 @@
-import { TypeIcons } from "@/components/Icons"
-import { useHeightObserver } from "@/components/useHeightObserver"
+import { TypeIcons } from "@/components/papi/Icons"
+import { useHeightObserver } from "@/components/papi/useHeightObserver"
 import {
   EditArray,
   EditComplexCodecComponentProps,

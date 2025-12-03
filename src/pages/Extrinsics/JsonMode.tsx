@@ -1,4 +1,4 @@
-import { JsonDisplay } from "@/components/JsonDisplay"
+import { JsonDisplay } from "@/components/papi/JsonDisplay"
 import { FC, useMemo } from "react"
 
 export const JsonMode: FC<{

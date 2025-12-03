@@ -1,4 +1,4 @@
-import { SearchableSelect } from "@/components/Select"
+import { SearchableSelect } from "@/components/papi/Select"
 import { isEnumComplex, isEnumVoid } from "@/utils/shape"
 import { EditEnum, NOTIN } from "@polkadot-api/react-builder"
 import { Marker } from "../common/Markers"

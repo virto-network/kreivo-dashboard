@@ -5,7 +5,7 @@ import { createRoot } from "react-dom/client"
 import { BrowserRouter } from "react-router-dom"
 import { merge } from "rxjs"
 import App from "./App.tsx"
-import { TooltipProvider } from "./components/ui/tooltip.tsx"
+import { TooltipProvider } from "./components/papi/ui/tooltip.tsx"
 import "./index.css"
 
 const link = document.createElement('link');

@@ -1,5 +1,5 @@
-import { BinaryEditModal } from "@/components/BinaryEditButton"
-import { BinaryEdit, Focus, TypeIcon, TypeIcons } from "@/components/Icons"
+import { BinaryEditModal } from "@/components/papi/BinaryEditButton"
+import { BinaryEdit, Focus, TypeIcon, TypeIcons } from "@/components/papi/Icons"
 import {
   EditAccountId,
   EditBigNumber,
