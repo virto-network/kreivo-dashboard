@@ -194,13 +194,14 @@ export const BuyMembershipWidget: React.FC<WidgetProps> = ({
           setSelectedCommunityIndex((prev) => (prev > 0 ? prev - 1 : 0));
           break;
         case 'Enter':
-        case 'Tab':
+        case 'Tab': {
           e.preventDefault();
           const parsedComm = parseInput(input, cursorPosition);
           if (parsedComm.hashtagStart !== null && communities[selectedCommunityIndex]) {
             handleCommunitySelect(communities[selectedCommunityIndex]);
           }
           break;
+        }
         case 'Escape':
           e.preventDefault();
           setShowCommunityList(false);
@@ -264,6 +265,7 @@ export const BuyMembershipWidget: React.FC<WidgetProps> = ({
             }
           }
         } catch (e) {
+          console.debug('Catching error searching for memberships:', e);
           continue;
         }
       }

@@ -76,6 +76,7 @@ const Index: React.FC = () => {
             return 'number' in headerObj ? Number(headerObj.number) :
               'blockNumber' in headerObj ? Number(headerObj.blockNumber) : null;
           } catch (error) {
+            console.error('Error fetching block number:', error);
             return null;
           }
         };

@@ -141,7 +141,7 @@ const VirtoConnect: React.FC<VirtoConnectProps> = ({
       virtoConnect.removeEventListener('login-error', handleAuthError);
       virtoConnect.removeEventListener('register-error', handleAuthError);
     };
-  }, [onAuthSuccess, onAuthError]);
+  }, [onAuthSuccess, onAuthError, setSdk, setUserAddress, setUserId, setIsAuthenticated]);
 
   return (
     <>

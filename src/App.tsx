@@ -3,6 +3,7 @@ import { VirtoProvider } from '@/contexts/VirtoContext';
 
 // Declare custom virto elements
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
       'virto-connect': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
