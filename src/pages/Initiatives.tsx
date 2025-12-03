@@ -1,27 +1,27 @@
-import React from 'react';
-import { useInitiatives } from '@/hooks/useInitiatives';
-import './Initiatives.css';
+import React from "react"
+import { useInitiatives } from "@/hooks/useInitiatives"
+import "./Initiatives.css"
 
 const Initiatives: React.FC = () => {
-  const { initiatives, isLoading, error } = useInitiatives(1); // Community ID 1
+  const { initiatives, isLoading, error } = useInitiatives(1) // Community ID 1
 
   const getProgressColor = (progress: number) => {
     if (progress < 50) {
-      return '#ef4444'; // red
+      return "#ef4444" // red
     } else if (progress < 80) {
-      return '#fbbf24'; // yellow
+      return "#fbbf24" // yellow
     }
-    return '#10b981'; // green
-  };
+    return "#10b981" // green
+  }
 
   const getStatusBadge = (status: string) => {
     const statusColors: Record<string, string> = {
-      active: '#3b82f6',
-      completed: '#10b981',
-      pending: '#fbbf24',
-    };
-    return statusColors[status] || '#6b7280';
-  };
+      active: "#3b82f6",
+      completed: "#10b981",
+      pending: "#fbbf24",
+    }
+    return statusColors[status] || "#6b7280"
+  }
 
   return (
     <div className="initiatives-page">
@@ -41,7 +41,7 @@ const Initiatives: React.FC = () => {
             <div key={initiative.id} className="initiatives-item">
               <div className="initiatives-item-header">
                 <div className="initiatives-item-title">{initiative.name}</div>
-                <div 
+                <div
                   className="initiatives-status-badge"
                   style={{ backgroundColor: getStatusBadge(initiative.status) }}
                 >
@@ -50,21 +50,24 @@ const Initiatives: React.FC = () => {
               </div>
               <div className="initiatives-progress-section">
                 <div className="progress-bar">
-                  <div 
-                    className="progress-fill" 
-                    style={{ 
-                      width: `${initiative.progress}%`, 
-                      backgroundColor: getProgressColor(initiative.progress)
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${initiative.progress}%`,
+                      backgroundColor: getProgressColor(initiative.progress),
                     }}
                   ></div>
                 </div>
                 <div className="initiatives-progress-info">
-                  <span className="progress-percentage">{initiative.progress}%</span>
-                  {initiative.ayes !== undefined && initiative.nays !== undefined && (
-                    <span className="progress-votes">
-                      {initiative.ayes} ayes / {initiative.nays} nays
-                    </span>
-                  )}
+                  <span className="progress-percentage">
+                    {initiative.progress}%
+                  </span>
+                  {initiative.ayes !== undefined &&
+                    initiative.nays !== undefined && (
+                      <span className="progress-votes">
+                        {initiative.ayes} ayes / {initiative.nays} nays
+                      </span>
+                    )}
                 </div>
               </div>
             </div>
@@ -72,8 +75,7 @@ const Initiatives: React.FC = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Initiatives;
-
+export default Initiatives

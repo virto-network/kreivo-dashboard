@@ -17,7 +17,9 @@ export const CBool: ViewBool = ({ value }) => {
 
 export const CVoid: ViewVoid = () => null
 
-export const CAccountId: ViewAccountId = ({ value }) => <span className="font-mono text-sm">{value}</span>
+export const CAccountId: ViewAccountId = ({ value }) => (
+  <span className="font-mono text-sm">{value}</span>
+)
 
 export const CEthAccount: ViewEthAccount = ({ value }) => <span>{value}</span>
 

@@ -77,9 +77,9 @@ export const Modal: FC<ModalProps> = ({
         ref={setRef}
         onClose={onClose}
         style={{
-          background: '#12211E',
-          border: '1px solid #263333',
-          color: '#ded0f1'
+          background: "#12211E",
+          border: "1px solid #263333",
+          color: "#ded0f1",
         }}
       >
         <ModalRefContext.Provider value={ref}>
@@ -123,13 +123,13 @@ const ModalPolyfill: FC<ModalProps> = ({ open, children, onClose }) => {
         }
       }}
     >
-      <div 
+      <div
         className="modal extrinsic-modal-dark rounded flex flex-col overflow-hidden z-[9999] relative shadow-2xl"
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: '#12211E',
-          border: '1px solid #263333',
-          color: '#ded0f1'
+          background: "#12211E",
+          border: "1px solid #263333",
+          color: "#ded0f1",
         }}
       >
         {children}
@@ -146,32 +146,37 @@ const ModalContent: FC<
   }>
 > = ({ title, onClose, children, className }) => (
   <>
-    <div 
+    <div
       className="px-4 py-3 border-b flex overflow-hidden min-w-[10rem] shrink-0"
       style={{
-        borderColor: '#263333'
+        borderColor: "#263333",
       }}
     >
-      <div className="flex-1 flex font-bold" style={{ color: '#ded0f1' }}>{title}</div>
+      <div className="flex-1 flex font-bold" style={{ color: "#ded0f1" }}>
+        {title}
+      </div>
       <button
         type="button"
         className="shrink-0"
         onClick={onClose}
         style={{
-          color: '#ded0f1',
+          color: "#ded0f1",
           opacity: 0.7,
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          transition: 'opacity 0.2s ease'
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          transition: "opacity 0.2s ease",
         }}
-        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+        onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+        onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
       >
         <XSquare />
       </button>
     </div>
-    <div className={twMerge("p-4 flex flex-col overflow-auto", className)} style={{ background: '#12211E', color: '#ded0f1' }}>
+    <div
+      className={twMerge("p-4 flex flex-col overflow-auto", className)}
+      style={{ background: "#12211E", color: "#ded0f1" }}
+    >
       {children}
     </div>
   </>

@@ -14,7 +14,7 @@
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: #282C34;
+  background: #282c34;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
@@ -54,12 +54,12 @@
 }
 
 .inline-select-prefix {
-  color: #6B46C1;
+  color: #6b46c1;
   font-weight: 600;
 }
 
 .inline-select-username {
-  color: #A0AEC0;
+  color: #a0aec0;
   font-size: 0.85rem;
 }
 
@@ -81,4 +81,3 @@
 .inline-select-dropdown::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
-

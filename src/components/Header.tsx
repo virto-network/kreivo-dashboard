@@ -1,200 +1,220 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
-import VirtoConnect from '@/components/VirtoConnect';
-import FaucetIframe from '@/components/FaucetIframe';
-import { useNotification } from '@/hooks/useNotification';
-import type { User } from '@/types/auth.types';
-import './Header.css';
+import React, { useState, useEffect } from "react"
+import ReactDOM from "react-dom/client"
+import VirtoConnect from "@/components/VirtoConnect"
+import FaucetIframe from "@/components/FaucetIframe"
+import { useNotification } from "@/hooks/useNotification"
+import type { User } from "@/types/auth.types"
+import "./Header.css"
 
 interface HeaderProps {
-  onAuthSuccess?: (user: User) => void;
-  onAuthError?: (error: string) => void;
+  onAuthSuccess?: (user: User) => void
+  onAuthError?: (error: string) => void
 }
 
 const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userInitial, setUserInitial] = useState<string>('');
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const [username, setUsername] = useState<string>('');
-  const { showSuccessNotification, showErrorNotification } = useNotification();
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [userInitial, setUserInitial] = useState<string>("")
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const [username, setUsername] = useState<string>("")
+  const { showSuccessNotification, showErrorNotification } = useNotification()
 
   useEffect(() => {
     const checkAuth = () => {
       try {
-        const isLoggedIn = localStorage.getItem('isLoggedIn');
-        if (isLoggedIn === 'false' || isLoggedIn === null) {
-          setIsAuthenticated(false);
-          setUsername('');
-          setUserInitial('');
-          return;
+        const isLoggedIn = localStorage.getItem("isLoggedIn")
+        if (isLoggedIn === "false" || isLoggedIn === null) {
+          setIsAuthenticated(false)
+          setUsername("")
+          setUserInitial("")
+          return
         }
 
-        const virtoUser = localStorage.getItem('virto_connected_user');
-        const lastUserId = localStorage.getItem('lastUserId');
-        const userId = virtoUser || lastUserId;
+        const virtoUser = localStorage.getItem("virto_connected_user")
+        const lastUserId = localStorage.getItem("lastUserId")
+        const userId = virtoUser || lastUserId
 
-        if (userId && userId.trim() !== '' && isLoggedIn === 'true') {
-          setIsAuthenticated(true);
-          setUsername(userId);
-          const initial = userId.charAt(0).toUpperCase();
-          setUserInitial(initial);
+        if (userId && userId.trim() !== "" && isLoggedIn === "true") {
+          setIsAuthenticated(true)
+          setUsername(userId)
+          const initial = userId.charAt(0).toUpperCase()
+          setUserInitial(initial)
         } else {
-          setIsAuthenticated(false);
-          setUsername('');
-          setUserInitial('');
+          setIsAuthenticated(false)
+          setUsername("")
+          setUserInitial("")
         }
       } catch (error) {
-        console.error('Error reading from localStorage:', error);
-        setIsAuthenticated(false);
+        console.error("Error reading from localStorage:", error)
+        setIsAuthenticated(false)
       }
-    };
+    }
 
-    checkAuth();
+    checkAuth()
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'virto_connected_user' || e.key === 'lastUserId' || e.key === 'isLoggedIn') {
-        checkAuth();
+      if (
+        e.key === "virto_connected_user" ||
+        e.key === "lastUserId" ||
+        e.key === "isLoggedIn"
+      ) {
+        checkAuth()
       }
-    };
+    }
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange)
 
     const handleAuthChange = () => {
-      checkAuth();
-    };
+      checkAuth()
+    }
 
-    document.addEventListener('virto-auth-change', handleAuthChange);
+    document.addEventListener("virto-auth-change", handleAuthChange)
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      document.removeEventListener('virto-auth-change', handleAuthChange);
-    };
-  }, []);
+      window.removeEventListener("storage", handleStorageChange)
+      document.removeEventListener("virto-auth-change", handleAuthChange)
+    }
+  }, [])
 
   useEffect(() => {
-    const virtoConnect = document.getElementById('virtoConnect') as any;
-    
-    if (!virtoConnect) return;
+    const virtoConnect = document.getElementById("virtoConnect") as any
+
+    if (!virtoConnect) return
 
     const handleLoginSuccess = (event: any) => {
-      console.log('handleLoginSuccess received event:', event);
-      const username = event.detail?.username || event.detail?.userId || event.detail;
+      console.log("handleLoginSuccess received event:", event)
+      const username =
+        event.detail?.username || event.detail?.userId || event.detail
 
       if (username) {
-        const usernameStr = typeof username === 'string' ? username : String(username);
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('virto_account_address', event.detail?.address);
-        setIsAuthenticated(true);
-        setUsername(usernameStr);
-        const initial = usernameStr.charAt(0).toUpperCase();
-        setUserInitial(initial);
+        const usernameStr =
+          typeof username === "string" ? username : String(username)
+        localStorage.setItem("isLoggedIn", "true")
+        localStorage.setItem("virto_account_address", event.detail?.address)
+        setIsAuthenticated(true)
+        setUsername(usernameStr)
+        const initial = usernameStr.charAt(0).toUpperCase()
+        setUserInitial(initial)
 
-        document.dispatchEvent(new CustomEvent('virto-auth-change'));
+        document.dispatchEvent(new CustomEvent("virto-auth-change"))
       }
-    };
+    }
 
     const handleRegisterSuccess = (event: any) => {
-      const username = event.detail?.username || event.detail?.userId || event.detail;
+      const username =
+        event.detail?.username || event.detail?.userId || event.detail
 
       if (username) {
-        const usernameStr = typeof username === 'string' ? username : String(username);
-        localStorage.setItem('isLoggedIn', 'true');
-        setIsAuthenticated(true);
-        setUsername(usernameStr);
-        const initial = usernameStr.charAt(0).toUpperCase();
-        setUserInitial(initial);
+        const usernameStr =
+          typeof username === "string" ? username : String(username)
+        localStorage.setItem("isLoggedIn", "true")
+        setIsAuthenticated(true)
+        setUsername(usernameStr)
+        const initial = usernameStr.charAt(0).toUpperCase()
+        setUserInitial(initial)
 
-        document.dispatchEvent(new CustomEvent('virto-auth-change'));
+        document.dispatchEvent(new CustomEvent("virto-auth-change"))
       }
-    };
+    }
 
     const handleLoginError = (event: any) => {
-      const error = event.detail?.error;
-      console.log('Login error received:', error);
-      
+      const error = event.detail?.error
+      console.log("Login error received:", error)
+
       if (error) {
-        const errorString = error.toString ? error.toString() : JSON.stringify(error);
-        
-        const isPaymentError = errorString.includes('InvalidTxError') && 
-                              errorString.includes('"type": "Invalid"') && 
-                              errorString.includes('"type": "Payment"');
-        
+        const errorString = error.toString
+          ? error.toString()
+          : JSON.stringify(error)
+
+        const isPaymentError =
+          errorString.includes("InvalidTxError") &&
+          errorString.includes('"type": "Invalid"') &&
+          errorString.includes('"type": "Payment"')
+
         if (isPaymentError) {
-          console.log('Payment error detected, showing faucet again');
-          
-          const usernameInput = virtoConnect.shadowRoot?.querySelector('virto-input[name="username"]');
-          const username = usernameInput?.value || '';
-          
+          console.log("Payment error detected, showing faucet again")
+
+          const usernameInput = virtoConnect.shadowRoot?.querySelector(
+            'virto-input[name="username"]',
+          )
+          const username = usernameInput?.value || ""
+
           if (username) {
-            virtoConnect.showFaucetConfirmation(username);
+            virtoConnect.showFaucetConfirmation(username)
           }
         }
       }
-    };
+    }
 
     const handleFaucetIframeReady = async (event: CustomEvent) => {
-      console.log('Faucet iframe ready:', event.detail);
-      const { username, address, virtoConnectElement } = event.detail;
-      
-      const container = virtoConnectElement.getFaucetContainer();
+      console.log("Faucet iframe ready:", event.detail)
+      const { username, address, virtoConnectElement } = event.detail
+
+      const container = virtoConnectElement.getFaucetContainer()
       if (!container) {
-        console.error('Faucet container not found');
-        return;
+        console.error("Faucet container not found")
+        return
       }
 
-      let isMatrixMember = false;
-      let checkingMembership = true;
+      let isMatrixMember = false
+      let checkingMembership = true
 
       try {
-        const response = await fetch(`https://connect.virto.one/api/matrix/check-member?username=${encodeURIComponent(username)}`);
+        const response = await fetch(
+          `https://connect.virto.one/api/matrix/check-member?username=${encodeURIComponent(username)}`,
+        )
         if (response.ok) {
-          const data = await response.json();
-          isMatrixMember = data.isMember || false;
-          console.log('Matrix membership check:', isMatrixMember);
+          const data = await response.json()
+          isMatrixMember = data.isMember || false
+          console.log("Matrix membership check:", isMatrixMember)
         } else {
-          console.warn('Matrix membership check failed');
+          console.warn("Matrix membership check failed")
         }
       } catch (error) {
-        console.warn('Error checking Matrix membership:', error);
+        console.warn("Error checking Matrix membership:", error)
       } finally {
-        checkingMembership = false;
+        checkingMembership = false
       }
 
-      const root = ReactDOM.createRoot(container);
-      
+      const root = ReactDOM.createRoot(container)
+
       const handleAccept = async () => {
         try {
-          const sdk = virtoConnect.sdk;
+          const sdk = virtoConnect.sdk
           if (!sdk) {
-            throw new Error('SDK not available');
+            throw new Error("SDK not available")
           }
-          
-          console.log('Calling addMember for user:', username);
-          const faucetResult = await sdk.auth.addMember(username);
-          console.log('Faucet successful:', faucetResult);
-          
-          showSuccessNotification("Welcome Bonus Processed!", "Your $100 welcome bonus has been successfully processed.");
-          
+
+          console.log("Calling addMember for user:", username)
+          const faucetResult = await sdk.auth.addMember(username)
+          console.log("Faucet successful:", faucetResult)
+
+          showSuccessNotification(
+            "Welcome Bonus Processed!",
+            "Your $100 welcome bonus has been successfully processed.",
+          )
+
           setTimeout(() => {
-            root.unmount();
-            virtoConnectElement.completeFaucetFlowFromParent(true, faucetResult);
-          }, 1500);
-          
-          return { success: true };
-          
+            root.unmount()
+            virtoConnectElement.completeFaucetFlowFromParent(true, faucetResult)
+          }, 1500)
+
+          return { success: true }
         } catch (error) {
-          console.error('Faucet failed:', error);
-          const errorMessage = error instanceof Error ? error.message : 'Failed to process welcome bonus';
-          showErrorNotification("Welcome Bonus Failed", errorMessage);
-          return { success: false, error: errorMessage };
+          console.error("Faucet failed:", error)
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Failed to process welcome bonus"
+          showErrorNotification("Welcome Bonus Failed", errorMessage)
+          return { success: false, error: errorMessage }
         }
-      };
+      }
 
       const handleDecline = () => {
-        console.log('Faucet declined');
-        root.unmount();
-        virtoConnectElement.completeFaucetFlowFromParent(false);
-      };
+        console.log("Faucet declined")
+        root.unmount()
+        virtoConnectElement.completeFaucetFlowFromParent(false)
+      }
 
       root.render(
         <FaucetIframe
@@ -204,114 +224,130 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
           checkingMembership={checkingMembership}
           onAccept={handleAccept}
           onDecline={handleDecline}
-        />
-      );
+        />,
+      )
 
       virtoConnectElement.faucetCleanup = () => {
-        root.unmount();
-      };
-    };
-
-    virtoConnect.addEventListener('login-success', handleLoginSuccess);
-    virtoConnect.addEventListener('register-success', handleRegisterSuccess);
-    virtoConnect.addEventListener('login-error', handleLoginError);
-    virtoConnect.addEventListener('faucet-iframe-ready', handleFaucetIframeReady);
-
-    const interval = !isAuthenticated ? setInterval(() => {
-      const isLoggedIn = localStorage.getItem('isLoggedIn');
-      if (isLoggedIn === 'false' || isLoggedIn === null) {
-        setIsAuthenticated(false);
-        return;
+        root.unmount()
       }
+    }
 
-      const virtoUser = localStorage.getItem('virto_connected_user');
-      const lastUserId = localStorage.getItem('lastUserId');
-      const userId = virtoUser || lastUserId;
+    virtoConnect.addEventListener("login-success", handleLoginSuccess)
+    virtoConnect.addEventListener("register-success", handleRegisterSuccess)
+    virtoConnect.addEventListener("login-error", handleLoginError)
+    virtoConnect.addEventListener(
+      "faucet-iframe-ready",
+      handleFaucetIframeReady,
+    )
 
-      if (userId && userId.trim() !== '' && isLoggedIn === 'true') {
-        setIsAuthenticated(true);
-        setUsername(userId);
-        const initial = userId.charAt(0).toUpperCase();
-        setUserInitial(initial);
-      }
-    }, 2000) : null;
+    const interval = !isAuthenticated
+      ? setInterval(() => {
+          const isLoggedIn = localStorage.getItem("isLoggedIn")
+          if (isLoggedIn === "false" || isLoggedIn === null) {
+            setIsAuthenticated(false)
+            return
+          }
+
+          const virtoUser = localStorage.getItem("virto_connected_user")
+          const lastUserId = localStorage.getItem("lastUserId")
+          const userId = virtoUser || lastUserId
+
+          if (userId && userId.trim() !== "" && isLoggedIn === "true") {
+            setIsAuthenticated(true)
+            setUsername(userId)
+            const initial = userId.charAt(0).toUpperCase()
+            setUserInitial(initial)
+          }
+        }, 2000)
+      : null
 
     return () => {
-      virtoConnect.removeEventListener('login-success', handleLoginSuccess);
-      virtoConnect.removeEventListener('register-success', handleRegisterSuccess);
-      virtoConnect.removeEventListener('login-error', handleLoginError);
-      virtoConnect.removeEventListener('faucet-iframe-ready', handleFaucetIframeReady);
-      
+      virtoConnect.removeEventListener("login-success", handleLoginSuccess)
+      virtoConnect.removeEventListener(
+        "register-success",
+        handleRegisterSuccess,
+      )
+      virtoConnect.removeEventListener("login-error", handleLoginError)
+      virtoConnect.removeEventListener(
+        "faucet-iframe-ready",
+        handleFaucetIframeReady,
+      )
+
       if (virtoConnect.faucetCleanup) {
-        virtoConnect.faucetCleanup();
+        virtoConnect.faucetCleanup()
       }
-      
+
       if (interval) {
-        clearInterval(interval);
+        clearInterval(interval)
       }
-    };
-  }, [isAuthenticated, showSuccessNotification, showErrorNotification]);
+    }
+  }, [isAuthenticated, showSuccessNotification, showErrorNotification])
 
   const handleAuthSuccess = (user: User) => {
-    console.log('handleAuthSuccess received user:', user);
-    localStorage.setItem('isLoggedIn', 'true');
-    setIsAuthenticated(true);
-    const usernameStr = user?.profile?.name || user?.profile?.id || '';
+    console.log("handleAuthSuccess received user:", user)
+    localStorage.setItem("isLoggedIn", "true")
+    setIsAuthenticated(true)
+    const usernameStr = user?.profile?.name || user?.profile?.id || ""
     if (usernameStr) {
-      setUsername(usernameStr);
-      const initial = usernameStr.charAt(0).toUpperCase();
-      setUserInitial(initial);
+      setUsername(usernameStr)
+      const initial = usernameStr.charAt(0).toUpperCase()
+      setUserInitial(initial)
     }
-    onAuthSuccess?.(user);
-  };
+    onAuthSuccess?.(user)
+  }
 
   const handleAuthError = (error: string) => {
-    onAuthError?.(error);
-  };
+    onAuthError?.(error)
+  }
 
   const handleLogout = () => {
-    localStorage.removeItem('virto_connected_user');
-    localStorage.removeItem('lastUserId');
-    localStorage.setItem('isLoggedIn', 'false');
+    localStorage.removeItem("virto_connected_user")
+    localStorage.removeItem("lastUserId")
+    localStorage.setItem("isLoggedIn", "false")
 
-    setIsAuthenticated(false);
-    setUserInitial('');
-    setUsername('');
-    setShowUserMenu(false);
+    setIsAuthenticated(false)
+    setUserInitial("")
+    setUsername("")
+    setShowUserMenu(false)
 
-    document.dispatchEvent(new CustomEvent('virto-auth-change'));
+    document.dispatchEvent(new CustomEvent("virto-auth-change"))
 
-    const virtoConnect = document.getElementById('virtoConnect') as any;
-    const previewVirtoConnect = document.getElementById('previewVirtoConnect') as any;
+    const virtoConnect = document.getElementById("virtoConnect") as any
+    const previewVirtoConnect = document.getElementById(
+      "previewVirtoConnect",
+    ) as any
 
-    if (virtoConnect && typeof virtoConnect.close === 'function') {
-      virtoConnect.close();
+    if (virtoConnect && typeof virtoConnect.close === "function") {
+      virtoConnect.close()
     }
-    if (previewVirtoConnect && typeof previewVirtoConnect.close === 'function') {
-      previewVirtoConnect.close();
+    if (
+      previewVirtoConnect &&
+      typeof previewVirtoConnect.close === "function"
+    ) {
+      previewVirtoConnect.close()
     }
-  };
+  }
 
   const handleAvatarClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShowUserMenu(!showUserMenu);
-  };
+    e.stopPropagation()
+    setShowUserMenu(!showUserMenu)
+  }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest('.kreivo-user-menu-container')) {
-        setShowUserMenu(false);
+      const target = event.target as HTMLElement
+      if (!target.closest(".kreivo-user-menu-container")) {
+        setShowUserMenu(false)
       }
-    };
+    }
 
     if (showUserMenu) {
-      document.addEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside)
       return () => {
-        document.removeEventListener('click', handleClickOutside);
-      };
+        document.removeEventListener("click", handleClickOutside)
+      }
     }
-  }, [showUserMenu]);
+  }, [showUserMenu])
 
   return (
     <header className="kreivo-header">
@@ -333,19 +369,17 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
           ) : (
             <div className="kreivo-user-menu-container">
               <div className="kreivo-user-avatar" onClick={handleAvatarClick}>
-                <div className="kreivo-avatar-circle">
-                  {userInitial}
-                </div>
+                <div className="kreivo-avatar-circle">{userInitial}</div>
               </div>
 
               {showUserMenu && (
                 <div className="kreivo-user-menu">
                   <div className="kreivo-user-menu-header">
-                    <div className="kreivo-user-menu-avatar">
-                      {userInitial}
-                    </div>
+                    <div className="kreivo-user-menu-avatar">{userInitial}</div>
                     <div className="kreivo-user-menu-info">
-                      <div className="kreivo-user-menu-username">{username}</div>
+                      <div className="kreivo-user-menu-username">
+                        {username}
+                      </div>
                       <div className="kreivo-user-menu-label">Usuario</div>
                     </div>
                   </div>
@@ -354,7 +388,17 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
                     className="kreivo-user-menu-item logout"
                     onClick={handleLogout}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                       <polyline points="16 17 21 12 16 7"></polyline>
                       <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -368,8 +412,7 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
-
+export default Header

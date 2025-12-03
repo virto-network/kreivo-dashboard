@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react"
 
 const Discussions: React.FC = () => {
   return (
@@ -6,8 +6,7 @@ const Discussions: React.FC = () => {
       <h1>Discussions</h1>
       <p>This is the Discussions page</p>
     </div>
-  );
-};
+  )
+}
 
-export default Discussions;
-
+export default Discussions

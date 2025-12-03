@@ -3,6 +3,7 @@ import { TextInputField } from "./codec-components"
 import { useGenericSynchronizeInput } from "@/components/papi/useSynchroniseInput"
 
 const getValidation = (value: string) =>
+  // eslint-disable-next-line no-extra-boolean-cast
   !!value.match(/^[01]+$/) ? null : `Only "0" and "1" allowed`
 
 export const CBitSeq: EditBitSeq = ({ value, onValueChanged }) => {

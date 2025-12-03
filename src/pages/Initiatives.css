@@ -16,7 +16,7 @@
   font-weight: 700;
   color: white;
   margin: 0;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
 }
 
 .initiatives-loading,
@@ -62,7 +62,7 @@
   font-size: 1.1rem;
   color: white;
   font-weight: 600;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
 }
 
 .initiatives-status-badge {
@@ -110,5 +110,3 @@
 .progress-votes {
   font-size: 0.8rem;
 }
-
-

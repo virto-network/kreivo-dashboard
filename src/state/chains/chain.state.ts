@@ -34,10 +34,14 @@ const setRpcLogsEnabled = (enabled: boolean) =>
   localStorage.setItem("rpc-logs", String(enabled))
 const getRpcLogsEnabled = () => localStorage.getItem("rpc-logs") === "true"
 console.log("You can enable JSON-RPC logs by calling `setRpcLogsEnabled(true)`")
-  ; (window as any).setRpcLogsEnabled = setRpcLogsEnabled
+;(window as any).setRpcLogsEnabled = setRpcLogsEnabled
 
 export const getProvider = () => {
-  const source = { type: "websocket" as const, id: "localhost", endpoint: HARDCODED_ENDPOINT }
+  const source = {
+    type: "websocket" as const,
+    id: "localhost",
+    endpoint: HARDCODED_ENDPOINT,
+  }
   const provider = getWebsocketProvider(source)
 
   return withLogsRecorder((_msg) => {
@@ -60,31 +64,32 @@ const addEntryToCache = (
     const old = [...cached.entries()].find(([, v]) => v.id === entry.id)
     if (old) cached.delete(old[0])
     cached.set(codeHash, entry)
-      ;[...cached.entries()]
-        .sort(([, a], [, b]) => b.time - a.time)
-        .slice(MAX_CACHE_ENTRIES)
-        .forEach(([k]) => {
-          cached.delete(k)
-        })
+    ;[...cached.entries()]
+      .sort(([, a], [, b]) => b.time - a.time)
+      .slice(MAX_CACHE_ENTRIES)
+      .forEach(([k]) => {
+        cached.delete(k)
+      })
     return cached
   })
 
 const getMetadata = (codeHash: string | null) =>
   codeHash
     ? from(get<MetadataCache>(IDB_KEY)).pipe(
-      map((cache) => {
-        const entry = cache?.get(codeHash)
-        if (!entry) return null
-        addEntryToCache(codeHash, { ...entry, time: Date.now() })
-        return fromHex(entry.data)
-      }),
-    )
+        map((cache) => {
+          const entry = cache?.get(codeHash)
+          if (!entry) return null
+          addEntryToCache(codeHash, { ...entry, time: Date.now() })
+          return fromHex(entry.data)
+        }),
+      )
     : of(null)
 
-const setMetadataFactory = (id: string) => (codeHash: string | null, data: Uint8Array) => {
-  if (codeHash)
-    addEntryToCache(codeHash, { id, time: Date.now(), data: toHex(data) })
-}
+const setMetadataFactory =
+  (id: string) => (codeHash: string | null, data: Uint8Array) => {
+    if (codeHash)
+      addEntryToCache(codeHash, { id, time: Date.now(), data: toHex(data) })
+  }
 
 export const chainClient$ = state(
   of("localhost").pipe(
@@ -131,7 +136,7 @@ const uncachedRuntimeCtx$ = chainClient$.pipeState(
 export const localRuntimeCtx$ = state(
   from(kreivo.getMetadata()).pipe(
     map((metadataRaw) => {
-      if (!metadataRaw) throw new Error('Could not load local metadata')
+      if (!metadataRaw) throw new Error("Could not load local metadata")
 
       const metadata = unifyMetadata(decAnyMetadata(metadataRaw))
       const lookup = getLookupFn(metadata)
@@ -143,8 +148,8 @@ export const localRuntimeCtx$ = state(
         dynamicBuilder,
         txDecoder: getExtrinsicDecoder(metadataRaw),
       }
-    })
-  )
+    }),
+  ),
 )
 
 export const runtimeCtx$ = chainClient$.pipeState(

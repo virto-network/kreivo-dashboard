@@ -21,6 +21,7 @@ export const useGenericSynchronizeInput = <T extends unknown, R>(
       const r = value === NOTIN ? defaultValue : serializeValue(value)
       setInputValue(r)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export const useGenericSynchronizeInput = <T extends unknown, R>(
     if (parsed !== values.current.editor) {
       onValueChanged(parsed)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValue])
 
   return [inputValue, setInputValue] as const

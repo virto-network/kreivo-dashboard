@@ -30,7 +30,7 @@
   margin: 0;
   letter-spacing: -0.02em;
   line-height: 1;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
 }
 
 .kreivo-header-right {
@@ -58,7 +58,11 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--green, #24AF37) 0%, var(--dark-green, #006B0A) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--green, #24af37) 0%,
+    var(--dark-green, #006b0a) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -113,7 +117,7 @@
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  background: #282C34;
+  background: #282c34;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   min-width: 240px;
@@ -147,7 +151,11 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--green, #24AF37) 0%, var(--dark-green, #006B0A) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--green, #24af37) 0%,
+    var(--dark-green, #006b0a) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,7 +183,7 @@
 
 .kreivo-user-menu-label {
   font-size: 0.8rem;
-  color: #A0AEC0;
+  color: #a0aec0;
 }
 
 .kreivo-user-menu-divider {
@@ -198,7 +206,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
 }
 
 .kreivo-user-menu-item:hover {
@@ -207,12 +215,12 @@
 }
 
 .kreivo-user-menu-item.logout {
-  color: #E53E3E;
+  color: #e53e3e;
 }
 
 .kreivo-user-menu-item.logout:hover {
   background: rgba(229, 62, 62, 0.15);
-  color: #F56565;
+  color: #f56565;
 }
 
 .kreivo-user-menu-item svg {
@@ -249,4 +257,3 @@
     right: -12px;
   }
 }
-

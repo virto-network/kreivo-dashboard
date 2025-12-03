@@ -1,136 +1,183 @@
-import React, { useEffect, useState } from 'react';
-import type { TransactionState } from '@/stores/transactionStore';
+import React, { useEffect, useState } from "react"
+import type { TransactionState } from "@/stores/transactionStore"
 
 interface TransactionAlertProps {
-  transaction: TransactionState;
-  onClose: () => void;
-  isCollapsed?: boolean;
+  transaction: TransactionState
+  onClose: () => void
+  isCollapsed?: boolean
 }
 
-const TransactionAlert: React.FC<TransactionAlertProps> = ({ transaction, onClose, isCollapsed = false }) => {
-  const [localProgress, setLocalProgress] = useState(transaction.progress);
+const TransactionAlert: React.FC<TransactionAlertProps> = ({
+  transaction,
+  onClose,
+  isCollapsed = false,
+}) => {
+  const [localProgress, setLocalProgress] = useState(transaction.progress)
 
   useEffect(() => {
-    if (transaction.status === 'pending') {
+    if (transaction.status === "pending") {
       const interval = setInterval(() => {
-        setLocalProgress(prev => {
-          const increment = 0.5;
-          return Math.min(prev + increment, 45); // Maximum 45% while pending
-        });
-      }, 1000);
+        setLocalProgress((prev) => {
+          const increment = 0.5
+          return Math.min(prev + increment, 45) // Maximum 45% while pending
+        })
+      }, 1000)
 
-      return () => clearInterval(interval);
-    } else if (transaction.status === 'included') {
+      return () => clearInterval(interval)
+    } else if (transaction.status === "included") {
       // When included in block, slower progress up to 90%
       const interval = setInterval(() => {
-        setLocalProgress(prev => {
+        setLocalProgress((prev) => {
+          const increment = 0.5
+          return Math.min(prev + increment, 90)
+        })
+      }, 1500)
 
-          const increment = 0.5;
-          return Math.min(prev + increment, 90);
-        });
-      }, 1500);
-
-      return () => clearInterval(interval);
+      return () => clearInterval(interval)
     } else {
-      setLocalProgress(transaction.progress);
+      setLocalProgress(transaction.progress)
     }
-  }, [transaction.status, transaction.progress]);
+  }, [transaction.status, transaction.progress])
 
   const getStatusColor = () => {
     switch (transaction.status) {
-      case 'pending':
-        return 'bg-yellow-500';
-      case 'included':
-        return 'bg-green-500';
-      case 'finalized':
-        return 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600';
-      case 'failed':
-        return 'bg-red-500';
+      case "pending":
+        return "bg-yellow-500"
+      case "included":
+        return "bg-green-500"
+      case "finalized":
+        return "bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600"
+      case "failed":
+        return "bg-red-500"
       default:
-        return 'bg-gray-500';
+        return "bg-gray-500"
     }
-  };
+  }
 
   const getStatusText = () => {
     switch (transaction.status) {
-      case 'pending':
-        return 'Sending transaction...';
-      case 'included':
-        return 'Transaction Successful!';
-      case 'finalized':
-        return 'Finalized! 🎉';
-      case 'failed':
-        return 'Failed';
+      case "pending":
+        return "Sending transaction..."
+      case "included":
+        return "Transaction Successful!"
+      case "finalized":
+        return "Finalized! 🎉"
+      case "failed":
+        return "Failed"
       default:
-        return 'Unknown';
+        return "Unknown"
     }
-  };
+  }
 
   const getStatusIcon = () => {
     switch (transaction.status) {
-      case 'pending':
+      case "pending":
         return (
-          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <svg
+            className="animate-spin h-4 w-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
           </svg>
-        );
-      case 'included':
+        )
+      case "included":
         return (
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
-        );
-      case 'finalized':
+        )
+      case "finalized":
         return (
-          <svg className="h-4 w-4 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            className="h-4 w-4 animate-bounce"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
-        );
-      case 'failed':
+        )
+      case "failed":
         return (
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   const formatHash = (hash: string | Uint8Array) => {
     if (!hash) {
-      return 'Unknown hash';
+      return "Unknown hash"
     }
 
-    let hexString: string;
+    let hexString: string
     if (hash instanceof Uint8Array) {
-      hexString = '0x' + Array.from(hash)
-        .map(byte => byte.toString(16).padStart(2, '0'))
-        .join('');
-    } else if (typeof hash === 'string') {
-      hexString = hash;
+      hexString =
+        "0x" +
+        Array.from(hash)
+          .map((byte) => byte.toString(16).padStart(2, "0"))
+          .join("")
+    } else if (typeof hash === "string") {
+      hexString = hash
     } else {
-      return 'Invalid hash';
+      return "Invalid hash"
     }
 
     if (hexString.length > 16) {
-      return `${hexString.substring(0, 10)}...${hexString.substring(hexString.length - 8)}`;
+      return `${hexString.substring(0, 10)}...${hexString.substring(hexString.length - 8)}`
     }
-    return hexString;
-  };
+    return hexString
+  }
 
   if (isCollapsed) {
     return (
       <div className="w-24 bg-white rounded-lg shadow-lg border border-gray-200 animate-slide-in">
         <div className="p-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 font-medium">{transaction.id}</span>
+            <span className="text-xs text-gray-500 font-medium">
+              {transaction.id}
+            </span>
             <div className={`w-3 h-3 rounded-full ${getStatusColor()}`}></div>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -139,14 +186,27 @@ const TransactionAlert: React.FC<TransactionAlertProps> = ({ transaction, onClos
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <div className={`w-2 h-2 rounded-full ${getStatusColor()}`}></div>
-            <span className="text-sm font-medium text-gray-900">ID: {transaction.hash ? formatHash(transaction.hash) : transaction.id}</span>
+            <span className="text-sm font-medium text-gray-900">
+              ID:{" "}
+              {transaction.hash ? formatHash(transaction.hash) : transaction.id}
+            </span>
           </div>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -160,31 +220,40 @@ const TransactionAlert: React.FC<TransactionAlertProps> = ({ transaction, onClos
 
         <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
           <div
-            className={`h-2 rounded-full transition-all duration-500 ease-out ${transaction.status === 'failed' ? 'bg-red-500' :
-              transaction.status === 'finalized' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-[length:200%_100%] animate-shimmer' :
-                transaction.status === 'included' ? 'bg-green-500' : 'bg-yellow-500'
-              }`}
+            className={`h-2 rounded-full transition-all duration-500 ease-out ${
+              transaction.status === "failed"
+                ? "bg-red-500"
+                : transaction.status === "finalized"
+                  ? "bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 bg-[length:200%_100%] animate-shimmer"
+                  : transaction.status === "included"
+                    ? "bg-green-500"
+                    : "bg-yellow-500"
+            }`}
             style={{ width: `${localProgress}%` }}
           ></div>
         </div>
 
-        {transaction.status === 'failed' && transaction.error && (
+        {transaction.status === "failed" && transaction.error && (
           <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
-            {typeof transaction.error === 'string' ? (
+            {typeof transaction.error === "string" ? (
               transaction.error
             ) : (
               <div>
-                <div className="font-medium">Error Type: {transaction.error.type}</div>
-                {transaction.error.value && typeof transaction.error.value === 'object' && 'type' in transaction.error.value && (
-                  <div>Value Type: {transaction.error.value.type}</div>
-                )}
+                <div className="font-medium">
+                  Error Type: {transaction.error.type}
+                </div>
+                {transaction.error.value &&
+                  typeof transaction.error.value === "object" &&
+                  "type" in transaction.error.value && (
+                    <div>Value Type: {transaction.error.value.type}</div>
+                  )}
               </div>
             )}
           </div>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TransactionAlert; 
+export default TransactionAlert

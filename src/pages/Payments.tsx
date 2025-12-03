@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react"
 
 const Payments: React.FC = () => {
   return (
@@ -6,8 +6,7 @@ const Payments: React.FC = () => {
       <h1>Payments</h1>
       <p>This is the Payments page</p>
     </div>
-  );
-};
+  )
+}
 
-export default Payments;
-
+export default Payments

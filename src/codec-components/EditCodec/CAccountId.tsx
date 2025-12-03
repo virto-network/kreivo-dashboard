@@ -3,7 +3,7 @@ import { EditAccountId, NOTIN } from "@polkadot-api/react-builder"
 export const CAccountId: EditAccountId = ({ value, onValueChanged }) => {
   return (
     <div className="space-y-2">
-      <input 
+      <input
         type="text"
         className="w-full p-2 border rounded font-mono text-sm"
         placeholder="Enter account address..."

@@ -1,7 +1,6 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @config '../tailwind.config.js';
-
 
 @layer base {
   *,
@@ -24,20 +23,20 @@
   }
 
   .karla-400 {
-    font-family: 'Karla', sans-serif;
+    font-family: "Karla", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
   }
 
   .poppins-extralight {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     font-weight: 200;
     font-style: normal;
   }
 
   .poppins-regular {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     font-weight: 400;
     font-style: normal;
   }
@@ -80,7 +79,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    
+
     --breakpoint-xl: 1280px;
     color-scheme: light;
   }
@@ -101,4 +100,3 @@
     backdrop-filter: blur(2px) !important;
   }
 }
-

@@ -15,7 +15,7 @@
   font-weight: 700;
   color: white;
   margin-bottom: 8px;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
 }
 
 .explorer-subtitle {
@@ -91,7 +91,7 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: white;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
 }
 
 .block-status {
@@ -163,4 +163,3 @@
     font-size: 0.85rem;
   }
 }
-

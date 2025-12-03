@@ -14,7 +14,7 @@
   max-width: 90vw;
   display: flex;
   align-items: center;
-  background: #282C34;
+  background: #282c34;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
   height: 56px;
@@ -22,22 +22,22 @@
   transition: all 0.2s ease;
 }
 
-.widget-input-wrapper>* {
+.widget-input-wrapper > * {
   position: relative;
   z-index: 1;
 }
 
 .widget-input-wrapper:focus-within {
-  border-color: #6B46C1;
+  border-color: #6b46c1;
 }
 
 .widget-prefix {
   padding: 0 0 0 24px;
-  color: #A0AEC0;
+  color: #a0aec0;
   font-size: 1rem;
   font-weight: 500;
   white-space: nowrap;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -51,7 +51,7 @@
   border-radius: 0;
   color: white;
   font-size: 1rem;
-  font-family: var(--font-primary, 'Outfit', sans-serif);
+  font-family: var(--font-primary, "Outfit", sans-serif);
   outline: none;
   min-width: 0;
   height: 100%;
@@ -62,7 +62,7 @@
 }
 
 .widget-input::placeholder {
-  color: #A0AEC0;
+  color: #a0aec0;
 }
 
 .widget-submit,
@@ -83,7 +83,7 @@
 }
 
 .widget-submit:hover:not(:disabled) {
-  color: #48BB78;
+  color: #48bb78;
 }
 
 .widget-submit:disabled {
