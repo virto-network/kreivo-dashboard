@@ -42,6 +42,9 @@ jobs:
           curl -L -H "Authorization: token $GITHUB_TOKEN" -o artifact.zip ${{ env.ARTIFACT_URL }}
           unzip artifact.zip -d dist
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Publish Cloudflare
         uses: cloudflare/wrangler-action@v3
         with:
