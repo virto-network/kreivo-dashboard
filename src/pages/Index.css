@@ -752,3 +752,104 @@
     stroke: var(--color-over);
   }
 }
+
+.bounty-track-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bounty-track-stat {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bounty-track-stat-label {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  text-align: center;
+}
+
+.bounty-track-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.bounty-track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bounty-track-item {
+  display: flex;
+  gap: 12px;
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 12px;
+  align-items: center;
+}
+
+.bounty-track-item-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #6b7280;
+}
+
+.bounty-track-item-indicator.active {
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+.bounty-track-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bounty-track-item-title {
+  font-size: 0.875rem;
+  color: white;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.bounty-track-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bounty-track-category {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.bounty-track-category.treasury {
+  color: #fb923c;
+  background: rgba(249, 115, 22, 0.1);
+}
+
+.bounty-track-category.governance {
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.bounty-track-time {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}

@@ -5,7 +5,6 @@ import { useStateObservable, withDefault } from "@react-rxjs/core"
 import { CommandSearch } from "@/components/CommandSearch"
 import { Command } from "@/data/commands.en"
 import { useCommunities } from "@/hooks/useCommunities"
-import { useInitiatives } from "@/hooks/useInitiatives"
 import { chainClient$ } from "@/state/chains/chain.state"
 import { firstValueFrom, map, switchMap } from "rxjs"
 import { WalletWidget } from "@/components/WalletWidget"
@@ -34,7 +33,7 @@ const Index: React.FC = () => {
   const [blockTimeElapsed, setBlockTimeElapsed] = useState<number>(0)
   const [blocksCount, setBlocksCount] = useState<number>(() => {
     const saved = sessionStorage.getItem("explorer-blocks-count")
-    return saved ? parseInt(saved, 10) : 0
+    return saved ? parseInt(saved, 10) : 30
   })
   const [latestBlockKey, setLatestBlockKey] = useState<number>(0)
   const [commandTrigger, setCommandTrigger] = useState<{
@@ -50,7 +49,6 @@ const Index: React.FC = () => {
   const finalizedNum = useStateObservable(finalizedNum$)
   const best = useStateObservable(best$)
   const { communities, isLoading: communitiesLoading } = useCommunities(3)
-  const { initiatives, isLoading: initiativesLoading } = useInitiatives(1, 3)
 
   const blocksWithEvents = React.useMemo(() => {
     const blockNumbers = new Set<number>()
@@ -63,6 +61,17 @@ const Index: React.FC = () => {
     }
     return blockNumbers
   }, [events])
+
+  // Initialize blocksCount when best block is available
+  useEffect(() => {
+    if (best && blocksCount === 0) {
+      const bestNum = Number(best.replace(/,/g, ""))
+      if (!isNaN(bestNum) && bestNum > 0) {
+        setBlocksCount(30)
+        sessionStorage.setItem("explorer-blocks-count", "30")
+      }
+    }
+  }, [best, blocksCount])
 
   useEffect(() => {
     const subscription = chainClient$.subscribe({
@@ -289,7 +298,7 @@ const Index: React.FC = () => {
                     const hasBlock = gridIndex < blocksCount
                     const blockNumber = best
                       ? Number(best.replace(/,/g, "")) -
-                        (blocksCount - 1 - gridIndex)
+                      (blocksCount - 1 - gridIndex)
                       : null
                     const isFinalized =
                       blockNumber !== null &&
@@ -484,46 +493,50 @@ const Index: React.FC = () => {
               )}
             </div>
           </div>
-          <Link to="/communities" className="dashboard-box-content-link">
-            <div className="dashboard-box-content">
-              <div className="community-list">
-                {communitiesLoading ? (
-                  <div
-                    style={{
-                      color: "rgba(255, 255, 255, 0.6)",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    Loading communities...
-                  </div>
-                ) : communities.length === 0 ? (
-                  <div
-                    style={{
-                      color: "rgba(255, 255, 255, 0.6)",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    No communities found
-                  </div>
-                ) : (
-                  communities.map((community, index) => {
-                    const gradients = [
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                      "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                      "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                    ]
-                    const indicators = ["#10b981", "#3b82f6", "#fbbf24"]
-                    const gradient = gradients[index % gradients.length]
-                    const indicator = indicators[index % indicators.length]
+          <div className="dashboard-box-content">
+            <div className="community-list">
+              {communitiesLoading ? (
+                <div
+                  style={{
+                    color: "rgba(255, 255, 255, 0.6)",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  Loading communities...
+                </div>
+              ) : communities.length === 0 ? (
+                <div
+                  style={{
+                    color: "rgba(255, 255, 255, 0.6)",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  No communities found
+                </div>
+              ) : (
+                communities.map((community, index) => {
+                  const gradients = [
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                    "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                  ]
+                  const indicators = ["#10b981", "#3b82f6", "#fbbf24"]
+                  const gradient = gradients[index % gradients.length]
+                  const indicator = indicators[index % indicators.length]
 
-                    const membersText = community.members
-                      ? community.members >= 1000
-                        ? `${(community.members / 1000).toFixed(1)}k members`
-                        : `${community.members} members`
-                      : "0 members"
+                  const membersText = community.members
+                    ? community.members >= 1000
+                      ? `${(community.members / 1000).toFixed(1)}k members`
+                      : `${community.members} members`
+                    : "0 members"
 
-                    return (
-                      <div key={community.id} className="community-item">
+                  return (
+                    <Link
+                      key={community.id}
+                      to={`/bounties/${community.id}`}
+                      style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                      <div className="community-item">
                         <div
                           className="community-logo"
                           style={{ background: gradient }}
@@ -537,12 +550,12 @@ const Index: React.FC = () => {
                           style={{ backgroundColor: indicator }}
                         ></div>
                       </div>
-                    )
-                  })
-                )}
-              </div>
+                    </Link>
+                  )
+                })
+              )}
             </div>
-          </Link>
+          </div>
         </div>
 
         {/* Wallet */}
@@ -641,80 +654,38 @@ const Index: React.FC = () => {
           </div>
         </Link>
 
-        {/* Acme DAO Initiatives */}
-        <Link to="/initiatives" className="dashboard-box-link">
-          <div className="dashboard-box">
-            <div className="dashboard-box-header">
-              <h3 className="dashboard-box-title">Acme DAO Initiatives</h3>
-              <div className="dashboard-box-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-              </div>
-            </div>
-            <div className="dashboard-box-content">
-              <div className="coming-soon-banner">Coming Soon</div>
-              <div className="initiative-list">
-                {initiativesLoading ? (
-                  <div
-                    style={{
-                      color: "rgba(255, 255, 255, 0.6)",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    Loading initiatives...
-                  </div>
-                ) : initiatives.length === 0 ? (
-                  <div
-                    style={{
-                      color: "rgba(255, 255, 255, 0.6)",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    No initiatives found
-                  </div>
-                ) : (
-                  initiatives.map((initiative) => {
-                    let progressColor = "#10b981"
-                    if (initiative.progress < 50) {
-                      progressColor = "#ef4444"
-                    } else if (initiative.progress < 80) {
-                      progressColor = "#fbbf24"
-                    }
-
-                    return (
-                      <div key={initiative.id} className="initiative-item">
-                        <div className="initiative-name">{initiative.name}</div>
-                        <div className="progress-bar">
-                          <div
-                            className="progress-fill"
-                            style={{
-                              width: `${initiative.progress}%`,
-                              backgroundColor: progressColor,
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                    )
-                  })
-                )}
-              </div>
+        {/* Bounties */}
+        <div className="dashboard-box">
+          <div className="dashboard-box-header">
+            <h3 className="dashboard-box-title">Bounties</h3>
+            <div className="dashboard-box-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
             </div>
           </div>
-        </Link>
+          <div className="dashboard-box-content">
+            <div style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '0.9rem',
+              textAlign: 'center',
+              padding: '2rem'
+            }}>
+              Select a community to view its proposals
+            </div>
+          </div>
+        </div>
 
         {/* Recent Payments */}
         <Link to="/payments" className="dashboard-box-link">

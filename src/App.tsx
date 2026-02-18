@@ -51,6 +51,9 @@ import Payments from "@/pages/Payments"
 import Marketplace from "@/pages/Marketplace"
 import Communities from "@/pages/Communities"
 import Discussions from "@/pages/Discussions"
+import Bounties from "@/pages/Bounties"
+import BountyDetail from "@/pages/BountyDetail/BountyDetail"
+import CreateProposal from "@/pages/CreateProposal/CreateProposal"
 import Index from "@/pages/Index"
 import "./App.css"
 
@@ -84,6 +87,9 @@ function App() {
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/communities" element={<Communities />} />
               <Route path="/discussions" element={<Discussions />} />
+              <Route path="/bounties/:communityId" element={<Bounties />} />
+              <Route path="/bounty/:id" element={<BountyDetail />} />
+              <Route path="/create-proposal" element={<CreateProposal />} />
             </Routes>
           </div>
 
