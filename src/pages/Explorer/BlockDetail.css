@@ -313,3 +313,29 @@
   color: rgba(222, 208, 241, 0.8);
   font-family: "Courier New", monospace;
 }
+
+.highlight-event {
+  border-color: #a78bfa;
+  box-shadow:
+    0 0 0 1px rgba(167, 139, 250, 0.5),
+    0 0 15px rgba(167, 139, 250, 0.2);
+  animation: pulse-highlight 2s ease-in-out infinite;
+}
+
+@keyframes pulse-highlight {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(167, 139, 250, 0.5),
+      0 0 15px rgba(167, 139, 250, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(167, 139, 250, 0.8),
+      0 0 25px rgba(167, 139, 250, 0.4);
+  }
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(167, 139, 250, 0.5),
+      0 0 15px rgba(167, 139, 250, 0.2);
+  }
+}

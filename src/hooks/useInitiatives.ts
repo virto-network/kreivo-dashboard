@@ -229,13 +229,17 @@ export const useInitiatives = (communityId: number = 1, limit?: number) => {
                 `Error fetching details for referendum ${trackInfo.id}:`,
                 err,
               )
-
-              initiativesList.push({
-                id: trackInfo.id,
-                name: `Initiative #${trackInfo.id}`,
-                progress: 0,
-                status: "pending",
-              })
+              const alreadyPushed = initiativesList.some(
+                (i) => i.id === trackInfo.id,
+              )
+              if (!alreadyPushed) {
+                initiativesList.push({
+                  id: trackInfo.id,
+                  name: `Initiative #${trackInfo.id}`,
+                  progress: 0,
+                  status: "pending",
+                })
+              }
             }
           }
 
@@ -248,7 +252,12 @@ export const useInitiatives = (communityId: number = 1, limit?: number) => {
             })),
           )
 
-          setInitiatives(initiativesList)
+          // De-duplicate initiatives by ID, keeping the first occurrence
+          const uniqueInitiatives = Array.from(
+            new Map(initiativesList.map((item) => [item.id, item])).values(),
+          )
+
+          setInitiatives(uniqueInitiatives)
           setIsLoading(false)
         } catch (storageErr: any) {
           log.error("Storage query error:", storageErr)

@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { useParams, Link } from "react-router-dom"
+import React, { useState, useEffect } from "react"
+import { useParams, Link, useLocation } from "react-router-dom"
 import { useStateObservable } from "@react-rxjs/core"
 import { blockInfoState$ } from "../block.state"
 import "./BlockDetail.css"
@@ -10,6 +10,9 @@ interface EventItemProps {
   getEventPhase: (event: any) => string | null
   getEventDetails: (event: any) => any
   safeStringify: (obj: any, space?: number) => string
+  id?: string
+  className?: string
+  defaultExpanded?: boolean
 }
 
 const EventItem: React.FC<EventItemProps> = ({
@@ -18,14 +21,17 @@ const EventItem: React.FC<EventItemProps> = ({
   getEventPhase,
   getEventDetails,
   safeStringify,
+  id,
+  className,
+  defaultExpanded = false,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded)
   const eventType = formatEventType(event)
   const phase = getEventPhase(event)
   const details = getEventDetails(event)
 
   return (
-    <div className="block-detail-event">
+    <div className={`block-detail-event ${className || ""}`} id={id}>
       <div className="block-detail-event-header">
         <div className="block-detail-event-main">
           <div className="block-detail-event-type-badge">{eventType}</div>
@@ -89,7 +95,26 @@ const EventItem: React.FC<EventItemProps> = ({
 
 const BlockDetail: React.FC = () => {
   const { blockNumber } = useParams<{ blockNumber: string }>()
+  const location = useLocation()
   const blockInfo = useStateObservable(blockInfoState$(blockNumber || ""))
+
+  useEffect(() => {
+    if (blockInfo && location.search) {
+      const searchParams = new URLSearchParams(location.search)
+      const eventId = searchParams.get("event")
+
+      if (eventId) {
+        // Use setTimeout to ensure DOM is fully rendered
+        setTimeout(() => {
+          const element = document.getElementById(`event-${eventId}`)
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" })
+            element.classList.add("highlight-event")
+          }
+        }, 100)
+      }
+    }
+  }, [blockInfo, location.search])
 
   if (!blockNumber) {
     return (
@@ -255,16 +280,24 @@ const BlockDetail: React.FC = () => {
                 Events ({blockInfo.events.length})
               </h2>
               <div className="block-detail-events">
-                {blockInfo.events.map((event: any, index: number) => (
-                  <EventItem
-                    key={index}
-                    event={event}
-                    formatEventType={formatEventType}
-                    getEventPhase={getEventPhase}
-                    getEventDetails={getEventDetails}
-                    safeStringify={safeStringify}
-                  />
-                ))}
+                {blockInfo.events.map((event: any, index: number) => {
+                  const searchParams = new URLSearchParams(location.search)
+                  const eventId = searchParams.get("event")
+                  const isTargetEvent = eventId === index.toString()
+
+                  return (
+                    <EventItem
+                      key={index}
+                      id={`event-${index}`}
+                      event={event}
+                      formatEventType={formatEventType}
+                      getEventPhase={getEventPhase}
+                      getEventDetails={getEventDetails}
+                      safeStringify={safeStringify}
+                      defaultExpanded={isTargetEvent}
+                    />
+                  )
+                })}
               </div>
             </div>
           )}

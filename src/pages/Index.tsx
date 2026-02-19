@@ -32,10 +32,7 @@ const Index: React.FC = () => {
   const navigate = useNavigate()
   const [latestBlock, setLatestBlock] = useState<number | null>(null)
   const [blockTimeElapsed, setBlockTimeElapsed] = useState<number>(0)
-  const [blocksCount, setBlocksCount] = useState<number>(() => {
-    const saved = sessionStorage.getItem("explorer-blocks-count")
-    return saved ? parseInt(saved, 10) : 0
-  })
+  const [blocksCount] = useState<number>(30)
   const [latestBlockKey, setLatestBlockKey] = useState<number>(0)
   const [commandTrigger, setCommandTrigger] = useState<{
     commandId: string
@@ -98,15 +95,7 @@ const Index: React.FC = () => {
                 if (blockNumber !== null) {
                   setLatestBlock(blockNumber)
                   setBlockTimeElapsed(0)
-                  setBlocksCount((prev) => {
-                    const newCount = Math.min(prev + 1, 30)
-                    sessionStorage.setItem(
-                      "explorer-blocks-count",
-                      newCount.toString(),
-                    )
-                    setLatestBlockKey(blockNumber)
-                    return newCount
-                  })
+                  setLatestBlockKey(blockNumber)
                 }
               }
             }
@@ -286,11 +275,14 @@ const Index: React.FC = () => {
                     const col = i % 6
                     const gridIndex = row * 6 + col
 
-                    const hasBlock = gridIndex < blocksCount
                     const blockNumber = best
                       ? Number(best.replace(/,/g, "")) -
                         (blocksCount - 1 - gridIndex)
                       : null
+                    const hasBlock =
+                      gridIndex < blocksCount &&
+                      blockNumber !== null &&
+                      blockNumber > 0
                     const isFinalized =
                       blockNumber !== null &&
                       finalizedNum !== null &&
