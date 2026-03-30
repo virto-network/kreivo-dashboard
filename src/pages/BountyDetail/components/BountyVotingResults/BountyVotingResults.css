@@ -1,0 +1,239 @@
+.bounty-voting-results {
+  background: #0a1311;
+  border: 1px solid #182820;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.bounty-voting-results__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  margin: 0 0 24px 0;
+}
+
+.bounty-voting-results__section {
+  margin-bottom: 24px;
+}
+
+.bounty-voting-results__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 8px;
+}
+
+.bounty-voting-results__label {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.bounty-voting-results__label--for {
+  color: #10b981;
+}
+.bounty-voting-results__label--against {
+  color: #ef4444;
+}
+
+.bounty-voting-results__value {
+  color: white;
+  font-family: "Courier New", monospace;
+}
+
+.bounty-voting-results__bar-container {
+  width: 100%;
+  height: 8px;
+  background: #374151;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.bounty-voting-results__bar {
+  height: 100%;
+}
+.bounty-voting-results__bar--for {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+.bounty-voting-results__bar--against {
+  background: #ef4444;
+}
+
+.bounty-voting-results__stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.bounty-voting-results__quorum {
+  border-top: 1px solid #374151;
+  padding-top: 20px;
+  margin-top: 8px;
+}
+
+.bounty-voting-results__quorum-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bounty-voting-results__quorum-label {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.bounty-voting-results__quorum-status {
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #6b7280;
+}
+
+.bounty-voting-results__quorum-status--reached {
+  color: #10b981;
+}
+.bounty-voting-results__quorum-icon {
+  font-size: 1rem;
+}
+
+.bounty-voting-results__quorum-bar-container {
+  width: 100%;
+  height: 6px;
+  background: #374151;
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bounty-voting-results__quorum-threshold {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: white;
+  z-index: 10;
+}
+
+.bounty-voting-results__quorum-bar {
+  height: 100%;
+  background: rgba(59, 130, 246, 0.5);
+}
+
+.bounty-voting-results__quorum-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.625rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Curves section */
+.bounty-voting-results__curves {
+  border-top: 1px solid rgba(31, 41, 55, 0.5);
+  padding-top: 24px;
+  margin-top: 24px;
+}
+
+.bounty-voting-results__curves-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.bounty-voting-results__curves-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.bounty-voting-results__curves-chart {
+  position: relative;
+  width: 100%;
+  height: 128px;
+  background: rgba(30, 35, 46, 0.5);
+  border-radius: 8px;
+  border: 1px solid #1f2937;
+  overflow: hidden;
+}
+
+.bounty-voting-results__curves-svg {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+}
+
+.bounty-voting-results__curves-indicators {
+  position: absolute;
+  inset: 16px;
+  pointer-events: none;
+}
+
+.curve-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 2px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.curve-point--approval {
+  background-color: #22c55e;
+  box-shadow: 0 0 4px rgba(34, 197, 94, 0.5);
+}
+
+.curve-point--support {
+  background-color: #3b82f6;
+  box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+}
+
+.bounty-voting-results__curves-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.legend-group {
+  display: flex;
+  gap: 16px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #d1d5db;
+}
+
+.legend-item--secondary {
+  color: #6b7280;
+  font-size: 0.7rem;
+}
+
+.legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.legend-dot--approval {
+  background: #22c55e;
+}
+.legend-dot--support {
+  background: #3b82f6;
+}
+.legend-dot--muted {
+  background: #6b7280;
+}

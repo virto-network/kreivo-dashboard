@@ -1,0 +1,15 @@
+.skeleton-pulse {
+  background: var(--color-bg-tertiary, #333);
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+  opacity: 0.6;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}

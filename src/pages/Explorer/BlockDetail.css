@@ -42,21 +42,6 @@
   flex-wrap: wrap;
 }
 
-.block-detail-back {
-  color: #ded0f1;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.2s;
-}
-
-.block-detail-back:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
 .block-detail-title {
   font-size: 2rem;
   font-weight: 600;
@@ -278,26 +263,95 @@
 }
 
 .block-detail-extrinsic {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.block-detail-extrinsic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.block-detail-extrinsic-main {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-  padding: 0.75rem 1rem;
+  flex: 1;
 }
 
 .block-detail-extrinsic-index {
   font-weight: 600;
   color: #6b46c1;
   min-width: 3rem;
+  font-family: "Courier New", monospace;
 }
 
-.block-detail-extrinsic-hash {
+.block-detail-extrinsic-name {
   font-family: "Courier New", monospace;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #a78bfa;
+}
+
+.block-detail-extrinsic-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ded0f1;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.block-detail-extrinsic-data {
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+}
+
+.block-detail-extrinsic-hash-row {
+  margin-bottom: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.block-detail-extrinsic-hash-label {
+  color: rgba(222, 208, 241, 0.5);
+}
+
+.block-detail-extrinsic-hash-value {
   color: rgba(222, 208, 241, 0.8);
+  font-family: "Courier New", monospace;
   word-break: break-all;
+}
+
+.block-detail-extrinsic-args {
+  margin: 0;
+  font-size: 0.75rem;
+  color: rgba(222, 208, 241, 0.8);
+  font-family: "Courier New", monospace;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: rgba(255, 255, 255, 0.01);
+  padding: 0.5rem;
+  border-radius: 4px;
 }
 
 .block-detail-header-data {

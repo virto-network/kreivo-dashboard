@@ -3,6 +3,10 @@ import { SystemEvent } from "@polkadot-api/observable-client"
 import { state } from "@react-rxjs/core"
 import { combineKeys, partitionByKey } from "@react-rxjs/utils"
 import { FixedSizeBinary, HexString, PolkadotClient } from "polkadot-api"
+import { getDynamicBuilder, getLookupFn } from "@polkadot-api/metadata-builders"
+import { decAnyMetadata, unifyMetadata } from "@polkadot-api/substrate-bindings"
+import { getExtrinsicDecoder } from "@polkadot-api/tx-utils"
+import { toHex, fromHex } from "@polkadot-api/utils"
 import {
   catchError,
   combineLatest,
@@ -49,6 +53,7 @@ export interface BlockInfo {
   parent: string
   number: number
   body: string[] | null
+  decodedBody: any[] | null
   events: SystemEvent[] | null
   header: {
     parentHash: HexString
@@ -98,17 +103,7 @@ export const [blockInfo$, recordedBlocks$] = partitionByKey(
                   return of(null)
                 }),
               ),
-              events: from(
-                client.getUnsafeApi().query.System.Events.getValue({
-                  at: hash,
-                }),
-              ).pipe(
-                startWith(null),
-                catchError((err) => {
-                  console.error("fetch events failed", err)
-                  return of(null)
-                }),
-              ),
+              events: of(null), // Lazy: don't fetch on every block
               header: from(client.getBlockHeader(hash)).pipe(
                 startWith(null),
                 catchError((err) => {
@@ -118,7 +113,15 @@ export const [blockInfo$, recordedBlocks$] = partitionByKey(
               ),
               status: getBlockStatus$(client, hash, number, parent),
               diff: getBlockDiff$(parent, hash),
-            }),
+            }).pipe(
+              map(
+                (data) =>
+                  ({
+                    ...data,
+                    decodedBody: null,
+                  }) as unknown as BlockInfo,
+              ),
+            ),
             NEVER,
           ),
       ),
@@ -155,11 +158,28 @@ const getUnpinnedBlockInfo$ = (hash: string): Observable<BlockInfo> =>
           parent: header.parentHash,
           number: header.number,
           body,
+          decodedBody: null, // Will be hydrated below if needed
           events,
           header,
           status,
           diff: null,
         })),
+        mergeMap(async (block: any) => {
+          try {
+            const metadataRaw = await client.getMetadata(hash)
+            const metadata =
+              metadataRaw instanceof Uint8Array
+                ? toHex(metadataRaw)
+                : (metadataRaw as HexString)
+            block.decodedBody = await decodeExtrinsics(
+              metadata,
+              block.body || [],
+            )
+          } catch (e) {
+            console.warn("Failed to decode body for unpinned block", e)
+          }
+          return block as BlockInfo
+        }),
         catchError(() => getUnpinnedBlockInfoFallback$(hash, client)),
         tap((v) => disconnectedBlocks$.next(v)),
       ),
@@ -207,12 +227,51 @@ const getUnpinnedBlockInfoFallback$ = (
   )
 
   return throughRpc$.pipe(
-    map(
-      ({ block: { extrinsics, header }, status, number }): BlockInfo => ({
+    mergeMap(async (res) => {
+      const {
+        block: { extrinsics, header },
+        status,
+        number,
+      } = res
+      let events: any[] | null = null
+      let decodedBody: any[] | null = null
+
+      try {
+        const metadataRaw = await client.getMetadata(hash)
+        const chainMetadata = unifyMetadata(decAnyMetadata(metadataRaw))
+        const dynamicBuilder = getDynamicBuilder(getLookupFn(chainMetadata))
+
+        // 1. Fetch Events
+        try {
+          const eventsStorage = dynamicBuilder.buildStorage("System", "Events")
+          const eventsKey = eventsStorage.keys.enc()
+          const eventsHex = await client._request<
+            string | null,
+            [string, string]
+          >("state_getStorage", [eventsKey, hash])
+          if (eventsHex) {
+            events = eventsStorage.value.dec(eventsHex)
+          }
+        } catch (e) {
+          console.warn("Failed to fetch events in fallback", e)
+        }
+
+        // 2. Decode Extrinsics
+        const metadata =
+          metadataRaw instanceof Uint8Array
+            ? toHex(metadataRaw)
+            : (metadataRaw as HexString)
+        decodedBody = await decodeExtrinsics(metadata, extrinsics)
+      } catch (e) {
+        console.warn("Metadata retrieval failed in fallback", e)
+      }
+
+      return {
         hash,
         parent: header.parentHash,
         body: extrinsics,
-        events: null,
+        decodedBody,
+        events,
         header: {
           digests: header.digest.logs,
           extrinsicRoot: header.extrinsicsRoot,
@@ -223,9 +282,43 @@ const getUnpinnedBlockInfoFallback$ = (
         number,
         status,
         diff: null,
-      }),
-    ),
+      } as BlockInfo
+    }),
   )
+}
+
+async function decodeExtrinsics(
+  metadataRaw: string | Uint8Array,
+  body: string[],
+) {
+  try {
+    const metadata =
+      typeof metadataRaw === "string" ? fromHex(metadataRaw) : metadataRaw
+    const extrinsicDecoder = getExtrinsicDecoder(metadata)
+
+    return body.map((hex) => {
+      try {
+        const decoded = extrinsicDecoder(hex) as any
+        // Decoded structure in PAPI: { call: { type: 'PalletName', value: { type: 'CallName', value: { ...args } } } }
+        return {
+          hash: "",
+          pallet: decoded.call?.type || "Unknown",
+          call: decoded.call?.value?.type || "Unknown",
+          args: decoded.call?.value?.value || {},
+        }
+      } catch (e) {
+        return { pallet: "Unknown", call: "Unknown", args: {}, hex }
+      }
+    })
+  } catch (e) {
+    console.error("decodeExtrinsics failed", e)
+    return body.map((hex) => ({
+      pallet: "Raw",
+      call: "DecryptionFailed",
+      args: {},
+      hex,
+    }))
+  }
 }
 
 export const inMemoryBlocks$ = state(
@@ -259,17 +352,50 @@ const blockHash$ = (hashOrHeight: string) =>
         ),
       )
 
+// Hydrate a block with full info (metadata, decoded body, events)
+export const hydratedBlockInfo$ = (hash: string) =>
+  combineLatest([blockInfo$(hash), client$]).pipe(
+    switchMap(([baseInfo, client]) => {
+      if (!baseInfo) return of(null)
+
+      return combineLatest({
+        metadata: from(client.getMetadata(hash)).pipe(
+          catchError(() => of(null)),
+        ),
+        events: from(
+          client.getUnsafeApi().query.System.Events.getValue({ at: hash }),
+        ).pipe(catchError(() => of(null))),
+      }).pipe(
+        mergeMap(async ({ metadata: metadataRaw, events }) => {
+          let decodedBody = null
+          if (metadataRaw && baseInfo.body) {
+            const metadata =
+              metadataRaw instanceof Uint8Array
+                ? toHex(metadataRaw)
+                : (metadataRaw as HexString)
+            decodedBody = await decodeExtrinsics(metadata, baseInfo.body)
+          }
+          return {
+            ...baseInfo,
+            events,
+            decodedBody,
+          } as BlockInfo
+        }),
+      )
+    }),
+  )
+
 export const blockInfoState$ = state(
   (hashOrHeight: string) =>
     inMemoryBlocks$.pipe(
       take(1),
       switchMap((blocks) => {
-        if (blocks.has(hashOrHeight)) return blockInfo$(hashOrHeight)
+        if (blocks.has(hashOrHeight)) return hydratedBlockInfo$(hashOrHeight)
         const potentialHeight = Number(hashOrHeight)
         const target = Array.from(blocks.values()).find(
           (x) => x?.number === potentialHeight,
         )
-        if (target) return blockInfo$(target.hash)
+        if (target) return hydratedBlockInfo$(target.hash)
         return blockHash$(hashOrHeight).pipe(mergeMap(getUnpinnedBlockInfo$))
       }),
     ),

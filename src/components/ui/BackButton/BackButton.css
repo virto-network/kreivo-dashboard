@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons+Round");
+
+.back-button-root {
+  background: #0a1311;
+  border: 1px solid #182820;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #d1d5db;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.back-button-root:hover {
+  background: #182820;
+  border-color: #22c55e;
+  color: #22c55e;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+}
+
+.back-button-root--with-label {
+  width: auto;
+  padding: 0 16px;
+  gap: 8px;
+}
+
+.back-button-root__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.back-button-root .material-icons-round {
+  font-size: 20px;
+}

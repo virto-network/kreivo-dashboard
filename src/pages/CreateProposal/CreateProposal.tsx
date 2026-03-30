@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
+import BackButton from "@/components/ui/BackButton/BackButton"
 import { useVirto } from "@/contexts/VirtoContext"
 import { chainClient$ } from "@/state/chains/chain.state"
 import { firstValueFrom, take } from "rxjs"
@@ -12,7 +13,12 @@ import { NostrService } from "@/services/nostr"
 import "./CreateProposal.css"
 
 const u8aToHex = (bytes: Uint8Array): string => {
-  return '0x' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+  return (
+    "0x" +
+    Array.from(bytes)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+  )
 }
 
 interface TreasuryProposal {
@@ -32,22 +38,28 @@ const CreateProposal: React.FC = () => {
   const { showSpinner, hideSpinner } = useSpinner()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const communityIdParam = searchParams.get('communityId')
-  const [communityIdFromUrl] = useState(communityIdParam ? parseInt(communityIdParam, 10) : null)
+  const communityIdParam = searchParams.get("communityId")
+  const [communityIdFromUrl] = useState(
+    communityIdParam ? parseInt(communityIdParam, 10) : null,
+  )
 
   const [formData, setFormData] = useState<TreasuryProposal>({
-    title: "proposal title test",
-    description: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    beneficiary: "5E4S9C7PNW1cdYEY9p2U3bATksAQ69njeKS2JTBpTYPxKWds",
-    amount: "10",
+    title: "",
+    description: "",
+    beneficiary: "",
+    amount: "0",
     track: "grants",
     communityId: communityIdFromUrl || 1,
   })
 
-  const [errors, setErrors] = useState<Partial<Record<keyof TreasuryProposal, string>>>({})
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof TreasuryProposal, string>>
+  >({})
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -93,7 +105,7 @@ const CreateProposal: React.FC = () => {
     if (!isAuthenticated) {
       showErrorNotification(
         "Authentication Error",
-        "Please connect your wallet first"
+        "Please connect your wallet first",
       )
       return
     }
@@ -106,7 +118,7 @@ const CreateProposal: React.FC = () => {
     if (!userAddress) {
       showErrorNotification(
         "Address Error",
-        "User address not available. Please reconnect your wallet."
+        "User address not available. Please reconnect your wallet.",
       )
       return
     }
@@ -122,14 +134,15 @@ const CreateProposal: React.FC = () => {
 
       const typedApi = client.getTypedApi(kreivo)
 
-      if (typedApi.tx.Utility) {
-      } else {
+      if (!typedApi.tx.Utility) {
         console.warn("Utility pallet not found in typedApi.tx")
       }
 
-      let callsOnBatch: any[] = []
+      const callsOnBatch: any[] = []
 
-      const amountInSmallestUnit = BigInt(Math.floor(parseFloat(formData.amount) * 1_000_000_000_000))
+      const amountInSmallestUnit = BigInt(
+        Math.floor(parseFloat(formData.amount) * 1_000_000_000_000),
+      )
       const treasurySpendCall = typedApi.tx.Balances.transfer_keep_alive({
         dest: {
           type: "Id" as const,
@@ -138,13 +151,13 @@ const CreateProposal: React.FC = () => {
         value: amountInSmallestUnit,
       })
 
-      const salt = crypto.randomUUID();
+      const salt = crypto.randomUUID()
       const remarkCall = typedApi.tx.System.remark_with_event({
         remark: Binary.fromText(`Proposal Salt: ${salt}`),
-      });
+      })
       const batchCall = typedApi.tx.Utility.batch_all({
         calls: [treasurySpendCall.decodedCall, remarkCall.decodedCall],
-      });
+      })
 
       const proposalCallData = await batchCall.getEncodedData()
       const inlineProposal = proposalCallData.asHex()
@@ -153,7 +166,6 @@ const CreateProposal: React.FC = () => {
       let proposal: any
 
       if (callLength > 128) {
-
         const preimageCall = typedApi.tx.Preimage.note_preimage({
           bytes: Binary.fromHex(inlineProposal),
         }).decodedCall
@@ -168,13 +180,11 @@ const CreateProposal: React.FC = () => {
           },
         }
       } else {
-
         proposal = {
           type: "Inline" as const,
           value: Binary.fromHex(inlineProposal),
         }
       }
-
 
       // Step 4: Submit referendum
       // const initiativeSubmit = typedApi.tx.CommunityReferenda.submit({
@@ -198,9 +208,10 @@ const CreateProposal: React.FC = () => {
       // console.log("Submit call created", x.asHex())
 
       // Step 5: Create final transaction to get the hash
-      const communityId = typeof formData.communityId === 'string'
-        ? parseInt(formData.communityId, 10)
-        : formData.communityId;
+      const communityId =
+        typeof formData.communityId === "string"
+          ? parseInt(formData.communityId, 10)
+          : formData.communityId
 
       const initiativeSubmitCorrect = typedApi.tx.CommunityReferenda.submit({
         proposal_origin: {
@@ -218,28 +229,34 @@ const CreateProposal: React.FC = () => {
 
       // console.log("Proposal submit call created:", initiativeSubmitCorrect)
 
-      const finalCallData = await initiativeSubmitCorrect.getEncodedData();
+      const finalCallData = await initiativeSubmitCorrect.getEncodedData()
       // console.log("Final call encoded hex:", finalCallData.asHex())
 
-
-      const inclusionPromise = new Promise<{ blockHash: string, txHash: string }>((resolve, reject) => {
+      const inclusionPromise = new Promise<{
+        blockHash: string
+        txHash: string
+      }>((resolve, reject) => {
         sdk.onTransactionUpdate((event: any) => {
           // console.log("SDK Transaction Event:", event.type, event);
 
-          if (event.type === 'included') {
-            const tx = event.transaction;
-            const blockHash = tx.blockHash instanceof Uint8Array ? u8aToHex(tx.blockHash) : tx.blockHash;
-            const txHash = tx.hash instanceof Uint8Array ? u8aToHex(tx.hash) : tx.hash;
+          if (event.type === "included") {
+            const tx = event.transaction
+            const blockHash =
+              tx.blockHash instanceof Uint8Array
+                ? u8aToHex(tx.blockHash)
+                : tx.blockHash
+            const txHash =
+              tx.hash instanceof Uint8Array ? u8aToHex(tx.hash) : tx.hash
 
             // console.log(`Event: Transaction included in block: ${blockHash}`);
-            resolve({ blockHash, txHash });
+            resolve({ blockHash, txHash })
           }
 
-          if (event.type === 'failed') {
-            reject(event.transaction.error || "Transaction failed event");
+          if (event.type === "failed") {
+            reject(event.transaction.error || "Transaction failed event")
           }
-        });
-      });
+        })
+      })
 
       const txResultPromise = sdk.custom.submitCallAsync(
         sdk.auth.sessionSigner,
@@ -248,42 +265,47 @@ const CreateProposal: React.FC = () => {
 
       const [inclusionResult] = await Promise.all([
         inclusionPromise,
-        txResultPromise
-      ]);
+        txResultPromise,
+      ])
 
       // console.log("Inclusion verified, block hash:", inclusionResult?.blockHash);
 
       if (inclusionResult?.blockHash) {
         try {
-          const { blockHash } = inclusionResult;
+          const { blockHash } = inclusionResult
           // console.log(`Processing block: ${blockHash}`);
 
-          const events = await typedApi.query.System.Events.getValue({ at: blockHash });
-          let myProposalId = null;
+          const events = await typedApi.query.System.Events.getValue({
+            at: blockHash,
+          })
+          let myProposalId = null
 
           for (const event of events) {
-            const { event: { type, value } } = event;
-            if (type === 'CommunityReferenda' && value.type === 'Submitted') {
+            const {
+              event: { type, value },
+            } = event
+            if (type === "CommunityReferenda" && value.type === "Submitted") {
               // console.log("Found Submitted event:", value);
-              myProposalId = value.value.index;
-              break;
+              myProposalId = value.value.index
+              break
             }
           }
 
           if (myProposalId === null || myProposalId === undefined) {
-            console.warn("Event not found in block. Using fallback strategy...");
-            await new Promise(r => setTimeout(r, 1000));
-            const referendaEntries = await typedApi.query.CommunityReferenda.ReferendumInfoFor.getEntries()
-            let maxId = -1;
+            console.warn("Event not found in block. Using fallback strategy...")
+            await new Promise((r) => setTimeout(r, 1000))
+            const referendaEntries =
+              await typedApi.query.CommunityReferenda.ReferendumInfoFor.getEntries()
+            let maxId = -1
             for (const { keyArgs, value } of referendaEntries) {
               const [referendumId] = keyArgs
               const info = value
-              if (info.type === 'Ongoing') {
-                const currentId = Number(referendumId);
-                if (currentId > maxId) maxId = currentId;
+              if (info.type === "Ongoing") {
+                const currentId = Number(referendumId)
+                if (currentId > maxId) maxId = currentId
               }
             }
-            if (maxId !== -1) myProposalId = maxId;
+            if (maxId !== -1) myProposalId = maxId
           }
 
           if (myProposalId !== null && myProposalId !== undefined) {
@@ -298,29 +320,37 @@ const CreateProposal: React.FC = () => {
                 amount: formData.amount,
                 communityId: formData.communityId,
                 proposer: userAddress,
-              }
+              },
             )
             // console.log("Nostr event published, ID:", nostrEventId)
           } else {
-            console.warn("Could not find any new proposal ID. Metadata not published.")
+            console.warn(
+              "Could not find any new proposal ID. Metadata not published.",
+            )
           }
-
         } catch (e) {
-          console.error("Error linking proposal ID (will use fallback if implemented or just notify):", e);
+          console.error(
+            "Error linking proposal ID (will use fallback if implemented or just notify):",
+            e,
+          )
         }
       }
 
       showSuccessNotification(
         "Proposal Submitted!",
-        "Proposal created successfully."
+        "Proposal created successfully.",
       )
       setTimeout(() => {
-        navigate(formData.communityId ? `/bounties/${formData.communityId}` : "/bounties")
+        navigate(
+          formData.communityId
+            ? `/bounties/${formData.communityId}`
+            : "/bounties",
+        )
       }, 1500)
     } catch (error: any) {
       showErrorNotification(
         "Transaction Error",
-        error?.message || "Failed to create proposal. Please try again."
+        error?.message || "Failed to create proposal. Please try again.",
       )
     } finally {
       setIsSubmitting(false)
@@ -331,12 +361,7 @@ const CreateProposal: React.FC = () => {
   return (
     <div className="create-proposal">
       <div className="create-proposal__header">
-        <button
-          className="create-proposal__back-button"
-          onClick={() => navigate(-1)}
-        >
-          <span className="material-icons-round">arrow_back</span>
-        </button>
+        <BackButton />
         <h1 className="create-proposal__title">Create Treasury Proposal</h1>
       </div>
 
@@ -375,9 +400,15 @@ const CreateProposal: React.FC = () => {
               onChange={handleInputChange}
               disabled={isSubmitting}
             >
-              <option value="grants">Grants Track - Small community grants</option>
-              <option value="treasury">Treasury Track - Medium to large spending</option>
-              <option value="operations">Operations Track - Technical operations</option>
+              <option value="grants">
+                Grants Track - Small community grants
+              </option>
+              <option value="treasury">
+                Treasury Track - Medium to large spending
+              </option>
+              <option value="operations">
+                Operations Track - Technical operations
+              </option>
             </select>
           </div>
 
@@ -405,10 +436,13 @@ const CreateProposal: React.FC = () => {
               disabled={isSubmitting}
             />
             {errors.description && (
-              <span className="create-proposal__error">{errors.description}</span>
+              <span className="create-proposal__error">
+                {errors.description}
+              </span>
             )}
             <span className="create-proposal__hint">
-              {formData.description.length} / 500 characters minimum. Markdown formatting supported.
+              {formData.description.length} / 500 characters minimum. Markdown
+              formatting supported.
             </span>
           </div>
         </div>
@@ -431,7 +465,9 @@ const CreateProposal: React.FC = () => {
               disabled={isSubmitting}
             />
             {errors.beneficiary && (
-              <span className="create-proposal__error">{errors.beneficiary}</span>
+              <span className="create-proposal__error">
+                {errors.beneficiary}
+              </span>
             )}
             <span className="create-proposal__hint">
               The Substrate address that will receive the funds
@@ -515,4 +551,3 @@ const CreateProposal: React.FC = () => {
 }
 
 export default CreateProposal
-

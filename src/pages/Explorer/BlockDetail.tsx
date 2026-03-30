@@ -1,91 +1,10 @@
-import React, { useState } from "react"
 import { useParams, Link } from "react-router-dom"
+import BackButton from "@/components/ui/BackButton/BackButton"
 import { useStateObservable } from "@react-rxjs/core"
 import { blockInfoState$ } from "../block.state"
+import EventItem from "./components/EventItem"
+import ExtrinsicItem from "./components/ExtrinsicItem"
 import "./BlockDetail.css"
-
-interface EventItemProps {
-  event: any
-  formatEventType: (event: any) => string
-  getEventPhase: (event: any) => string | null
-  getEventDetails: (event: any) => any
-  safeStringify: (obj: any, space?: number) => string
-}
-
-const EventItem: React.FC<EventItemProps> = ({
-  event,
-  formatEventType,
-  getEventPhase,
-  getEventDetails,
-  safeStringify,
-}) => {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const eventType = formatEventType(event)
-  const phase = getEventPhase(event)
-  const details = getEventDetails(event)
-
-  return (
-    <div className="block-detail-event">
-      <div className="block-detail-event-header">
-        <div className="block-detail-event-main">
-          <div className="block-detail-event-type-badge">{eventType}</div>
-          {phase && <div className="block-detail-event-phase">{phase}</div>}
-        </div>
-        <button
-          className="block-detail-event-toggle"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          {isExpanded ? "−" : "+"}
-        </button>
-      </div>
-
-      {Object.keys(details).length > 0 && (
-        <div className="block-detail-event-summary">
-          {details.weight && (
-            <div className="block-detail-event-detail-item">
-              <span className="block-detail-event-detail-label">Weight:</span>
-              <span className="block-detail-event-detail-value">
-                {details.weight}
-              </span>
-            </div>
-          )}
-          {details.proofSize && details.proofSize !== "O" && (
-            <div className="block-detail-event-detail-item">
-              <span className="block-detail-event-detail-label">
-                Proof Size:
-              </span>
-              <span className="block-detail-event-detail-value">
-                {details.proofSize}
-              </span>
-            </div>
-          )}
-          {details.class && (
-            <div className="block-detail-event-detail-item">
-              <span className="block-detail-event-detail-label">Class:</span>
-              <span className="block-detail-event-detail-value">
-                {details.class}
-              </span>
-            </div>
-          )}
-          {details.paysFee && (
-            <div className="block-detail-event-detail-item">
-              <span className="block-detail-event-detail-label">Pays Fee:</span>
-              <span className="block-detail-event-detail-value">
-                {details.paysFee}
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {isExpanded && (
-        <div className="block-detail-event-data">
-          <pre>{safeStringify(event, 2)}</pre>
-        </div>
-      )}
-    </div>
-  )
-}
 
 const BlockDetail: React.FC = () => {
   const { blockNumber } = useParams<{ blockNumber: string }>()
@@ -177,9 +96,7 @@ const BlockDetail: React.FC = () => {
     <div className="block-detail-page">
       <div className="block-detail-container">
         <div className="block-detail-header">
-          <Link to="/" className="block-detail-back">
-            ← Back to Dashboard
-          </Link>
+          <BackButton label="Back to Dashboard" to="/" />
           <h1 className="block-detail-title">
             Block #{blockInfo.number.toLocaleString()}
           </h1>
@@ -276,12 +193,18 @@ const BlockDetail: React.FC = () => {
               </h2>
               <div className="block-detail-extrinsics">
                 {blockInfo.body.map((extrinsic: string, index: number) => (
-                  <div key={index} className="block-detail-extrinsic">
-                    <div className="block-detail-extrinsic-index">#{index}</div>
-                    <div className="block-detail-extrinsic-hash">
-                      {formatHash(extrinsic)}
-                    </div>
-                  </div>
+                  <ExtrinsicItem
+                    key={index}
+                    index={index}
+                    extrinsic={extrinsic}
+                    decoded={
+                      blockInfo.decodedBody
+                        ? blockInfo.decodedBody[index]
+                        : null
+                    }
+                    formatHash={formatHash}
+                    safeStringify={safeStringify}
+                  />
                 ))}
               </div>
             </div>

@@ -1,4 +1,5 @@
 import React from "react"
+import BackButton from "@/components/ui/BackButton/BackButton"
 
 interface BountyBreadcrumbProps {
   category: string
@@ -13,12 +14,7 @@ const BountyBreadcrumb: React.FC<BountyBreadcrumbProps> = ({
 }) => {
   return (
     <div className="bounty-breadcrumb">
-      <button className="bounty-breadcrumb__back-button" onClick={onBack}>
-        <span className="material-symbols-outlined bounty-breadcrumb__back-icon">
-          arrow_back
-        </span>
-        Back to Board
-      </button>
+      <BackButton label="Back to Board" onClick={onBack} />
       <span className="bounty-breadcrumb__separator">/</span>
       <span className="bounty-breadcrumb__item bounty-breadcrumb__item--category">
         {category}
@@ -32,4 +28,3 @@ const BountyBreadcrumb: React.FC<BountyBreadcrumbProps> = ({
 }
 
 export default BountyBreadcrumb
-

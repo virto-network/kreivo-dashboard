@@ -1,0 +1,188 @@
+.bounty-header {
+  background: #0a1311;
+  border: 1px solid #182820;
+  border-radius: 12px;
+  padding: 32px;
+  position: relative;
+}
+
+.bounty-header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.bounty-header__tags {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bounty-header__category {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.bounty-header__category--orange {
+  color: #fb923c;
+  background: rgba(249, 115, 22, 0.1);
+}
+.bounty-header__category--blue {
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.1);
+}
+.bounty-header__category--purple {
+  color: #c084fc;
+  background: rgba(168, 85, 247, 0.1);
+}
+.bounty-header__category--gray {
+  color: #9ca3af;
+  background: rgba(107, 114, 128, 0.1);
+}
+
+.bounty-header__id {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-family: "Courier New", monospace;
+}
+
+.bounty-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bounty-header__status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  border: 1px solid;
+}
+
+.bounty-header__status--active {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.bounty-header__status--rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.bounty-header__status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: skeleton-pulse 2s infinite;
+}
+
+.bounty-header__share-button {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.bounty-header__share-button:hover {
+  color: #d1d5db;
+}
+.bounty-header__share-button--copied {
+  color: #22c55e !important;
+}
+
+.bounty-header__title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 24px 0;
+  line-height: 1.3;
+}
+
+.bounty-header__meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid #374151;
+  padding-top: 24px;
+}
+
+.bounty-header__proposer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bounty-header__proposer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bounty-header__proposer-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+.bounty-header__proposer-address {
+  font-size: 0.875rem;
+  color: white;
+  font-weight: 500;
+  font-family: "Courier New", monospace;
+}
+
+.bounty-header__divider {
+  width: 1px;
+  height: 32px;
+  background: #374151;
+}
+
+.bounty-header__date {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bounty-header__date-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+.bounty-header__date-value {
+  font-size: 0.875rem;
+  color: white;
+}
+.bounty-header__date-value-group {
+  display: flex;
+  flex-direction: column;
+}
+.bounty-header__time-value {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.skeleton-pulse {
+  background: var(--color-bg-tertiary, #333);
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+  opacity: 0.6;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}

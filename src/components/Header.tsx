@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
 import ReactDOM from "react-dom/client"
 import VirtoConnect from "@/components/VirtoConnect"
 import FaucetIframe from "@/components/FaucetIframe"
@@ -160,7 +161,7 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
 
       try {
         const response = await fetch(
-          `https://connect.virto.one/api/matrix/check-member?username=${encodeURIComponent(username)}`,
+          `http://localhost:3000/api/matrix/check-member?username=${encodeURIComponent(username)}`,
         )
         if (response.ok) {
           const data = await response.json()
@@ -353,14 +354,16 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
     <header className="kreivo-header">
       <div className="kreivo-header-container">
         <div className="kreivo-brand">
-          <h1 className="kreivo-brand-name">Kreivo</h1>
+          <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+            <h1 className="kreivo-brand-name">Kreivo</h1>
+          </Link>
         </div>
 
         <div className="kreivo-header-right">
           {!isAuthenticated ? (
             <div className="kreivo-connect-wrapper">
               <VirtoConnect
-                serverUrl="https://connect.virto.one/api"
+                serverUrl="http://localhost:3000/api"
                 providerUrl="wss://kreivo.io"
                 onAuthSuccess={handleAuthSuccess}
                 onAuthError={handleAuthError}

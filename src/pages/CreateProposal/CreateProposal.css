@@ -15,26 +15,6 @@
   gap: 16px;
 }
 
-.create-proposal__back-button {
-  background: #0a1311;
-  border: 1px solid #182820;
-  border-radius: 8px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #d1d5db;
-  transition: all 0.2s ease;
-}
-
-.create-proposal__back-button:hover {
-  background: #182820;
-  border-color: #22c55e;
-  color: #22c55e;
-}
-
 .create-proposal__title {
   font-size: 2rem;
   font-weight: 700;
@@ -229,4 +209,3 @@
     justify-content: center;
   }
 }
-

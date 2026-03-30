@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import BackButton from "@/components/ui/BackButton/BackButton"
 import { useCommunities } from "@/hooks/useCommunities"
+import { useDashboardLayout } from "@/hooks/useDashboardLayout"
 import "./Communities.css"
 
 export interface CommunitiesProps {
@@ -9,7 +12,9 @@ export interface CommunitiesProps {
 }
 
 const Communities: React.FC<CommunitiesProps> = ({ onActionClick }) => {
+  const navigate = useNavigate()
   const { communities, isLoading, error } = useCommunities()
+  const { favorites, toggleFavorite } = useDashboardLayout()
   const [showMenu, setShowMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -73,7 +78,10 @@ const Communities: React.FC<CommunitiesProps> = ({ onActionClick }) => {
   return (
     <div className="communities-page">
       <div className="communities-header">
-        <h1 className="communities-title">Communities</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <BackButton to="/" />
+          <h1 className="communities-title">Communities</h1>
+        </div>
         <div className="communities-menu-container" ref={menuRef}>
           <button
             className="communities-menu-button"
@@ -196,7 +204,12 @@ const Communities: React.FC<CommunitiesProps> = ({ onActionClick }) => {
       ) : (
         <div className="communities-list">
           {communities.map((community) => (
-            <div key={community.id} className="communities-item">
+            <div
+              key={community.id}
+              className="communities-item"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(`/bounties/${community.id}`)}
+            >
               <div
                 className="communities-logo"
                 style={{ background: getGradient(community.id) }}
@@ -207,6 +220,25 @@ const Communities: React.FC<CommunitiesProps> = ({ onActionClick }) => {
                   {formatMembers(community.members)}
                 </div>
               </div>
+              <button
+                className={`communities-favorite-btn ${favorites.includes(community.id.toString()) ? "is-favorite" : ""}`}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  toggleFavorite(community.id.toString())
+                }}
+                title={
+                  favorites.includes(community.id.toString())
+                    ? "Remove from dashboard"
+                    : "Add to dashboard"
+                }
+              >
+                <span className="material-icons-round">
+                  {favorites.includes(community.id.toString())
+                    ? "star"
+                    : "star_border"}
+                </span>
+              </button>
               <div
                 className="communities-indicator"
                 style={{ backgroundColor: getIndicator(community.id) }}

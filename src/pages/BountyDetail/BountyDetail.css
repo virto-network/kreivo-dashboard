@@ -37,25 +37,6 @@
   margin-bottom: 24px;
 }
 
-.bounty-breadcrumb__back-button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.bounty-breadcrumb__back-button:hover {
-  color: white;
-}
-
-.bounty-breadcrumb__back-icon {
-  font-size: 1.125rem;
-}
-
 .bounty-breadcrumb__separator {
   color: #4b5563;
 }
@@ -161,7 +142,6 @@
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;
@@ -283,7 +263,7 @@
 }
 
 .bounty-description__content--collapsed::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -383,7 +363,7 @@
   display: block;
 }
 
-.bounty-description__markdown>* {
+.bounty-description__markdown > * {
   display: block;
   visibility: visible;
 }
@@ -433,7 +413,7 @@
   background: rgba(255, 255, 255, 0.1);
   padding: 0.125rem 0.25rem;
   border-radius: 3px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.875em;
 }
 
@@ -460,256 +440,58 @@
   color: #93c5fd;
 }
 
-/* Voting Results Component */
-.bounty-voting-results {
-  background: #0a1311;
-  border: 1px solid #182820;
+.bounty-detail__alert {
   border-radius: 12px;
   padding: 24px;
-}
-
-.bounty-voting-results__title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #9ca3af;
-  margin: 0 0 24px 0;
-}
-
-.bounty-voting-results__section {
   margin-bottom: 24px;
-}
-
-.bounty-voting-results__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 8px;
-}
-
-.bounty-voting-results__label {
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-.bounty-voting-results__label--for {
-  color: #10b981;
-}
-
-.bounty-voting-results__label--against {
-  color: #ef4444;
-}
-
-.bounty-voting-results__value {
-  color: white;
-  font-family: "Courier New", monospace;
-}
-
-.bounty-voting-results__token {
-  color: #6b7280;
-  font-size: 0.875rem;
-}
-
-.bounty-voting-results__bar-container {
-  width: 100%;
-  height: 8px;
-  background: #374151;
-  border-radius: 9999px;
-  overflow: hidden;
-  margin-bottom: 4px;
-}
-
-.bounty-voting-results__bar {
-  height: 100%;
-}
-
-.bounty-voting-results__bar--for {
-  background: #10b981;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-}
-
-.bounty-voting-results__bar--against {
-  background: #ef4444;
-}
-
-.bounty-voting-results__stats {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-top: 4px;
-}
-
-.bounty-voting-results__percentage {
-  color: #6b7280;
-}
-
-.bounty-voting-results__count {
-  color: #6b7280;
-}
-
-.bounty-voting-results__quorum {
-  border-top: 1px solid #374151;
-  padding-top: 20px;
-  margin-top: 8px;
-}
-
-.bounty-voting-results__quorum-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.bounty-voting-results__quorum-label {
-  font-size: 0.875rem;
-  color: #9ca3af;
-}
-
-.bounty-voting-results__quorum-status {
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.bounty-voting-results__quorum-status--reached {
-  color: #10b981;
-}
-
-.bounty-voting-results__quorum-icon {
-  font-size: 0.875rem;
-}
-
-.bounty-voting-results__quorum-bar-container {
-  width: 100%;
-  height: 6px;
-  background: #374151;
-  border-radius: 9999px;
-  overflow: hidden;
-  position: relative;
-}
-
-.bounty-voting-results__quorum-threshold {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: white;
-  z-index: 10;
-}
-
-.bounty-voting-results__quorum-bar {
-  height: 100%;
-  background: rgba(59, 130, 246, 0.5);
-}
-
-.bounty-voting-results__quorum-stats {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.625rem;
-  color: #6b7280;
-  margin-top: 4px;
-}
-
-.bounty-voting-results__quorum-stat {
-  color: #6b7280;
-}
-
-/* Decision Curves within Voting Results */
-.bounty-voting-results__curves {
-  border-top: 1px solid rgba(31, 41, 55, 0.5);
-  padding-top: 24px;
-  margin-top: 24px;
-}
-
-.bounty-voting-results__curves-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.bounty-voting-results__curves-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
-}
-
-.bounty-voting-results__curves-badge {
-  font-size: 0.75rem;
-  color: #6b7280;
-  background: rgba(31, 41, 55, 0.5);
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.bounty-voting-results__curves-chart {
-  position: relative;
-  width: 100%;
-  height: 128px;
-  background: rgba(30, 35, 46, 0.5);
-  border-radius: 8px;
-  border: 1px solid #1f2937;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-
-.bounty-voting-results__curves-grid {
-  position: absolute;
-  inset: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  pointer-events: none;
-}
-
-.bounty-voting-results__curves-grid-line {
-  width: 100%;
-  height: 1px;
-  background: rgba(31, 41, 55, 0.3);
-}
-
-.bounty-voting-results__curves-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  padding: 16px;
-  overflow: hidden;
-}
-
-.bounty-voting-results__curves-legend {
-  display: flex;
-  align-items: center;
   gap: 16px;
-  flex-wrap: wrap;
+  align-items: start;
 }
 
-.bounty-voting-results__curves-legend-item {
+.bounty-detail__alert--deposit {
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.bounty-detail__alert-header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: #6b7280;
+  gap: 12px;
 }
 
-.bounty-voting-results__curves-legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+.bounty-detail__alert-header h3 {
+  margin: 0;
+  color: #eab308;
+  font-size: 1.1rem;
 }
 
-.bounty-voting-results__curves-legend-dot--approval {
-  background-color: #22c55e;
+.bounty-detail__alert-header .material-icons-round {
+  color: #eab308;
 }
 
-.bounty-voting-results__curves-legend-dot--support {
-  background-color: #3b82f6;
+.bounty-detail__alert p {
+  margin: 0;
+  color: #d1d5db;
+  line-height: 1.6;
+}
+
+.bounty-detail__deposit-button {
+  margin-top: 8px;
+  background: #eab308;
+  color: #000;
+  border: none;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.bounty-detail__deposit-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* Voting Panel Component */
@@ -765,7 +547,8 @@
 }
 
 .bounty-voting-panel__option--for:hover .bounty-voting-panel__option-label,
-.bounty-voting-panel__option--for.bounty-voting-panel__option--selected .bounty-voting-panel__option-label {
+.bounty-voting-panel__option--for.bounty-voting-panel__option--selected
+  .bounty-voting-panel__option-label {
   color: #10b981;
 }
 
@@ -776,7 +559,8 @@
 }
 
 .bounty-voting-panel__option--against:hover .bounty-voting-panel__option-label,
-.bounty-voting-panel__option--against.bounty-voting-panel__option--selected .bounty-voting-panel__option-label {
+.bounty-voting-panel__option--against.bounty-voting-panel__option--selected
+  .bounty-voting-panel__option-label {
   color: #ef4444;
 }
 
@@ -787,7 +571,8 @@
 }
 
 .bounty-voting-panel__option--abstain:hover .bounty-voting-panel__option-label,
-.bounty-voting-panel__option--abstain.bounty-voting-panel__option--selected .bounty-voting-panel__option-label {
+.bounty-voting-panel__option--abstain.bounty-voting-panel__option--selected
+  .bounty-voting-panel__option-label {
   color: #d1d5db;
 }
 
@@ -808,17 +593,20 @@
 }
 
 .bounty-voting-panel__option--for:hover .bounty-voting-panel__option-radio,
-.bounty-voting-panel__option--for.bounty-voting-panel__option--selected .bounty-voting-panel__option-radio {
+.bounty-voting-panel__option--for.bounty-voting-panel__option--selected
+  .bounty-voting-panel__option-radio {
   border-color: #10b981;
 }
 
 .bounty-voting-panel__option--against:hover .bounty-voting-panel__option-radio,
-.bounty-voting-panel__option--against.bounty-voting-panel__option--selected .bounty-voting-panel__option-radio {
+.bounty-voting-panel__option--against.bounty-voting-panel__option--selected
+  .bounty-voting-panel__option-radio {
   border-color: #ef4444;
 }
 
 .bounty-voting-panel__option--abstain:hover .bounty-voting-panel__option-radio,
-.bounty-voting-panel__option--abstain.bounty-voting-panel__option--selected .bounty-voting-panel__option-radio {
+.bounty-voting-panel__option--abstain.bounty-voting-panel__option--selected
+  .bounty-voting-panel__option-radio {
   border-color: #9ca3af;
 }
 
@@ -831,19 +619,24 @@
 }
 
 .bounty-voting-panel__option--for:hover .bounty-voting-panel__option-radio-dot,
-.bounty-voting-panel__option--for.bounty-voting-panel__option--selected .bounty-voting-panel__option-radio-dot {
+.bounty-voting-panel__option--for.bounty-voting-panel__option--selected
+  .bounty-voting-panel__option-radio-dot {
   background: #10b981;
   opacity: 1;
 }
 
-.bounty-voting-panel__option--against:hover .bounty-voting-panel__option-radio-dot,
-.bounty-voting-panel__option--against.bounty-voting-panel__option--selected .bounty-voting-panel__option-radio-dot {
+.bounty-voting-panel__option--against:hover
+  .bounty-voting-panel__option-radio-dot,
+.bounty-voting-panel__option--against.bounty-voting-panel__option--selected
+  .bounty-voting-panel__option-radio-dot {
   background: #ef4444;
   opacity: 1;
 }
 
-.bounty-voting-panel__option--abstain:hover .bounty-voting-panel__option-radio-dot,
-.bounty-voting-panel__option--abstain.bounty-voting-panel__option--selected .bounty-voting-panel__option-radio-dot {
+.bounty-voting-panel__option--abstain:hover
+  .bounty-voting-panel__option-radio-dot,
+.bounty-voting-panel__option--abstain.bounty-voting-panel__option--selected
+  .bounty-voting-panel__option-radio-dot {
   background: #9ca3af;
   opacity: 1;
 }

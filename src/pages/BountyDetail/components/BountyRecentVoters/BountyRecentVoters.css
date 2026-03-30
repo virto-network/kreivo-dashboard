@@ -1,0 +1,96 @@
+.bounty-recent-voters {
+  background: #0a1311;
+  border: 1px solid #182820;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.bounty-recent-voters__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.bounty-recent-voters__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.bounty-recent-voters__view-all {
+  background: transparent;
+  border: none;
+  color: #60a5fa;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.bounty-recent-voters__view-all:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #93c5fd;
+}
+
+.bounty-recent-voters__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bounty-recent-voters__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.bounty-recent-voters__item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.bounty-recent-voters__address {
+  font-size: 0.875rem;
+  color: white;
+  font-family: "Courier New", monospace;
+  font-weight: 500;
+}
+
+.bounty-recent-voters__vote {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+
+.bounty-recent-voters__vote--aye,
+.bounty-recent-voters__vote--for {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.bounty-recent-voters__vote--nay,
+.bounty-recent-voters__vote--against {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.bounty-recent-voters__empty {
+  color: #6b7280;
+  font-style: italic;
+  font-size: 0.8125rem;
+  text-align: center;
+  padding: 24px 0;
+}

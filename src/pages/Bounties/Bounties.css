@@ -117,30 +117,6 @@
   font-size: 1.125rem;
 }
 
-.bounties-back-button {
-  background: #0a1311;
-  border: 1px solid #182820;
-  border-radius: 8px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #d1d5db;
-  transition: all 0.2s ease;
-}
-
-.bounties-back-button:hover {
-  background: #0f1816;
-  border-color: #22c55e;
-  color: #22c55e;
-}
-
-.bounties-back-button .material-icons-round {
-  font-size: 1.25rem;
-}
-
 .bounties-title {
   font-size: 2rem;
   font-weight: 700;
@@ -261,6 +237,7 @@
     transform: scale(1);
     opacity: 0.75;
   }
+
   50% {
     transform: scale(2);
     opacity: 0;
@@ -319,7 +296,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .bounty-card:hover {
@@ -407,6 +384,10 @@
   gap: 4px;
 }
 
+.bounty-status--rejected {
+  color: #ef4444;
+}
+
 .bounty-id {
   font-size: 0.625rem;
   color: #6b7280;
@@ -415,10 +396,12 @@
 
 .bounty-title {
   font-size: 0.875rem;
-  font-weight: 500;
-  color: white;
-  margin: 0 0 8px 0;
-  line-height: 1.3;
+  font-weight: 600;
+  color: #f3f4f6;
+  margin: 8px 0 6px 0;
+  line-height: 1.4;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .bounty-description {
@@ -431,6 +414,8 @@
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .bounty-voting {
@@ -536,18 +521,89 @@
     font-size: 1.5rem;
   }
 
-  .bounties-back-button {
-    width: 36px;
-    height: 36px;
-  }
-
-  .bounties-back-button .material-icons-round {
-    font-size: 1.125rem;
-  }
-
   .bounties-create-button {
     width: 100%;
     justify-content: center;
   }
 }
 
+/* ── Skeleton Loading ─────────────────────────────────────────── */
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton-btn,
+.skeleton-title,
+.skeleton-create-btn,
+.skeleton-filter-label,
+.skeleton-filter-chip,
+.skeleton-col-title,
+.skeleton-badge,
+.skeleton-status,
+.skeleton-card-title {
+  background: linear-gradient(90deg, #1a2a25 25%, #243830 50%, #1a2a25 75%);
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+.skeleton-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.skeleton-title {
+  width: 340px;
+  height: 32px;
+}
+.skeleton-create-btn {
+  width: 148px;
+  height: 40px;
+  border-radius: 8px;
+}
+.skeleton-filter-label {
+  width: 100px;
+  height: 16px;
+}
+.skeleton-filter-chip {
+  width: 110px;
+  height: 34px;
+  border-radius: 8px;
+}
+.skeleton-col-title {
+  width: 100px;
+  height: 16px;
+}
+.skeleton-badge {
+  width: 80px;
+  height: 14px;
+}
+.skeleton-status {
+  width: 50px;
+  height: 14px;
+}
+.skeleton-card-title {
+  width: 75%;
+  height: 16px;
+  margin-top: 10px;
+}
+
+.skeleton-card {
+  cursor: default;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.skeleton-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

@@ -1,0 +1,93 @@
+.bounty-comments-container {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bounty-comments-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: white;
+}
+
+.bounty-comments-form {
+  margin-bottom: 24px;
+}
+
+.bounty-comments-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  margin-bottom: 12px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.bounty-comments-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bounty-comments-submit-button {
+  background: #22c55e;
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.bounty-comments-submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.bounty-comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bounty-comments-loading,
+.bounty-comments-empty {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.bounty-comments-item {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.bounty-comments-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.bounty-comments-author {
+  font-weight: 600;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.bounty-comments-time {
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
+.bounty-comments-content {
+  margin: 0;
+  color: #d1d5db;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}

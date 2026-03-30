@@ -185,3 +185,8 @@ export const metadata$ = lookup$.pipeState(map((lookup) => lookup.metadata))
 export const dynamicBuilder$ = localRuntimeCtx$.pipeState(
   map((ctx) => ctx.dynamicBuilder),
 )
+
+// Pre-subscribe chainClient$ to keep a persistent singleton connection to the chain
+chainClient$.subscribe(() => {
+  // console.debug("[chain.state] Connected to chain")
+})
