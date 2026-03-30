@@ -2,35 +2,35 @@
 
 ## Overview
 
-Formulario para crear propuestas de Treasury en Kreivo usando Community Referenda.
+Form for creating Treasury proposals in Kreivo using Community Referenda.
 
-## Estructura
+## Structure
 
-### Componentes Creados
+### Created Components
 
-- `CreateProposal.tsx` - Componente principal del formulario
-- `CreateProposal.css` - Estilos del formulario
+- `CreateProposal.tsx` - Main form component
+- `CreateProposal.css` - Form styles
 
-### Integración con polkadot-api
+### polkadot-api Integration
 
-#### Dependencias Necesarias
+#### Required Dependencies
 
 ```bash
 pnpm add polkadot-api @polkadot-api/descriptors-MYU7HCEV
 ```
 
-#### Implementación Pendiente
+#### Pending Implementation
 
-La función `handleSubmit` debe integrarse con polkadot-api siguiendo este flujo:
+The `handleSubmit` function should integrate with polkadot-api following this flow:
 
-1. **Crear el extrinsic de Treasury**
+1. **Create Treasury Extrinsic**
 
    ```typescript
-   // Similar a initiativeTreasuryRequest
+   // Similar to initiativeTreasuryRequest
    const treasurySpend = kreivoApi.tx.treasury.spend(amount, beneficiaryAddress)
    ```
 
-2. **Crear la propuesta inline o con preimage**
+2. **Create Proposal (Inline or with Preimage)**
 
    ```typescript
    const inlineProposal = kreivoApi.tx.utility
@@ -55,7 +55,7 @@ La función `handleSubmit` debe integrarse con polkadot-api siguiendo este flujo
    }
    ```
 
-3. **Submit referendum**
+3. **Submit Referendum**
 
    ```typescript
    const referendumSubmit = kreivoApi.tx.communityReferenda.submit(
@@ -71,7 +71,7 @@ La función `handleSubmit` debe integrarse con polkadot-api siguiendo este flujo
    )
    ```
 
-4. **Add metadata (descripción + título)**
+4. **Add Metadata (Title + Description)**
 
    ```typescript
    // Create metadata JSON with title and description
@@ -89,14 +89,14 @@ La función `handleSubmit` debe integrarse con polkadot-api siguiendo este flujo
    )
    ```
 
-5. **Place decision deposit**
+5. **Place Decision Deposit**
 
    ```typescript
    const placeDeposit =
      kreivoApi.tx.communityReferenda.placeDecisionDeposit(referendumId)
    ```
 
-6. **Batch all calls**
+6. **Batch All Calls**
 
    ```typescript
    const batchTx = kreivoApi.tx.utility.batchAll([
@@ -112,55 +112,55 @@ La función `handleSubmit` debe integrarse con polkadot-api siguiendo este flujo
    })
    ```
 
-### Archivos de Referencia
+### Reference Files
 
 - `/home/brayan/Documents/work/virto/xcm-programs/src/initiatives/index.ts`
 - `/home/brayan/Documents/work/virto/xcm-programs/src/initiatives/treasury.ts`
 
-### Descriptors de PAPI
+### PAPI Descriptors
 
-Los descriptors están disponibles en:
+Descriptors are available at:
 
 - `.papi/descriptors/dist/kreivo.d.ts`
 - `.papi/metadata/kreivo.scale`
 
-### Tracks Disponibles
+### Available Tracks
 
 - **Grants Track** - Small community grants
 - **Treasury Track** - Medium to large spending
 - **Operations Track** - Technical operations
 
-Cada track tiene diferentes parámetros de curvas de decisión (approval y support thresholds).
+Each track has different decision curve parameters (approval and support thresholds).
 
-## Estado Actual
+## Current Status
 
-✅ Formulario UI completado con validación
-✅ Integración con VirtoConnect SDK
-✅ Firma de transacciones implementada
-✅ Manejo de errores y notificaciones
-✅ Feedback visual (spinner, notificaciones)
-⚠️ Implementación temporal con `Balances.transfer_keep_alive` como placeholder
+✅ UI Form completed with validation
+✅ VirtoConnect SDK integration
+✅ Transaction signing implemented
+✅ Error handling and notifications
+✅ Visual feedback (spinner, notifications)
+⚠️ Temporary implementation with `Balances.transfer_keep_alive` as placeholder
 
 ## TODO
 
-- [ ] Verificar nombres exactos de pallets en descriptor:
-  - Treasury.spend o método equivalente
+- [ ] Verify exact pallet names in descriptor:
+  - Treasury.spend or equivalent method
   - Preimage.note_preimage
   - CommunityReferenda.submit
   - CommunityReferenda.set_metadata
   - CommunityReferenda.place_decision_deposit
-- [ ] Reemplazar placeholder con llamadas reales de treasury
-- [ ] Implementar lógica de preimage para propuestas grandes (>128 bytes)
-- [ ] Agregar metadata con título y descripción
-- [ ] Place decision deposit después de submit
-- [ ] Capturar referendum ID desde eventos de la transacción
-- [ ] Redirigir a propuesta creada después de éxito
+- [ ] Replace placeholder with real treasury calls
+- [ ] Implement preimage logic for large proposals (>128 bytes)
+- [ ] Add metadata with title and description
+- [ ] Place decision deposit after submit
+- [ ] Capture referendum ID from transaction events
+- [ ] Redirect to created proposal after success
 
-## Notas de Implementación
+## Implementation Notes
 
-El código actual usa `Balances.transfer_keep_alive` como placeholder porque los nombres exactos de los métodos en los pallets Treasury, Preimage y CommunityReferenda necesitan ser verificados en el descriptor de Kreivo.
+The current code uses `Balances.transfer_keep_alive` as a placeholder because the exact method names in the Treasury, Preimage, and CommunityReferenda pallets need to be verified in the Kreivo descriptor.
 
-Para completar la implementación, revisar:
+To complete the implementation, review:
 
-- `.papi/descriptors/dist/kreivo.d.ts` - Nombres de pallets y métodos
-- Ejemplos en `/home/brayan/Documents/work/virto/xcm-programs/src/initiatives/`
+- `.papi/descriptors/dist/kreivo.d.ts` - Pallet and method names
+- Examples in `/home/brayan/Documents/work/virto/xcm-programs/src/initiatives/`

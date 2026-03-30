@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react"
 import { SimplePool, Filter, EventTemplate } from "nostr-tools"
 
-// Un pool global para evitar crear demasiadas conexiones websocket concurrentes
+// A global pool to avoid creating too many concurrent websocket connections
 const globalPool = new SimplePool()
 
-// Default relays definidos afuera para mantener referencia estable
+// Default relays defined outside to maintain stable reference
 const DEFAULT_RELAYS = [
   "wss://relay.damus.io",
   "wss://nos.lol",
@@ -17,8 +17,8 @@ interface UseNostrSWRProps<T> {
   relays?: string[]
   kind?: number
   ttlSeconds?: number
-  // Función para firmar un evento y subirlo a nostr si este usuario contribuye al caché.
-  // Si no se provee, el usuario solo lee el caché.
+  // Function to sign an event and upload it to nostr if this user contributes to the cache.
+  // If not provided, the user only reads the cache.
   signEventFn?: (template: EventTemplate) => Promise<any>
 }
 
@@ -35,19 +35,19 @@ export function useNostrSWR<T>({
   const [isCached, setIsCached] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  // Usar referencia para evitar race conditions si queryKey cambia rápido
+  // Use reference to avoid race conditions if queryKey changes fast
   const currentKey = useRef(queryKey)
   const fetchRealDataRef = useRef(fetchRealData)
   const signEventFnRef = useRef(signEventFn)
 
-  // Sincronizar callbacks más recientes
+  // Synchronize latest callbacks
   useEffect(() => {
     fetchRealDataRef.current = fetchRealData
     signEventFnRef.current = signEventFn
   }, [fetchRealData, signEventFn])
 
-  // Convertir el arreglo de relays a un string para la dependencia del useEffect
-  // Esto evita loops infinitos si el usuario pasa ["wss://.."] directamente en línea
+  // Convert the relays array to a string for the useEffect dependency
+  // This avoids infinite loops if the user passes ["wss://.."] directly inline
   const relaysKey = relays.join(",")
 
   useEffect(() => {
@@ -58,19 +58,19 @@ export function useNostrSWR<T>({
     setIsCached(false)
 
     const loadData = async () => {
-      let nostrOcurrioCacheHit = false
+      let nostrCacheHit = false
 
-      // 1. Fase Optimista: Intentar leer del caché de Nostr
+      // 1. Optimistic Phase: Try to read from Nostr cache
       try {
         const filter: Filter = {
           kinds: [kind],
           "#d": [queryKey],
-          limit: 1, // Queremos solo el evento más reciente
+          limit: 1, // We want only the most recent event
         }
 
-        // Consultar el pool de relays conectados
-        // En nostr-tools >= 2.x esto está disponible.
-        // O se puede usar subscribeMany para escuchar EOSE.
+        // Query the pool of connected relays
+        // In nostr-tools >= 2.x this is available.
+        // Or subscribeMany can be used to listen for EOSE.
         const events = await new Promise<any[]>((resolve) => {
           const eventsAcc: any[] = []
           const sub = globalPool.subscribeMany(relays, [filter] as any, {
@@ -83,7 +83,7 @@ export function useNostrSWR<T>({
             },
           })
 
-          // Timeout de seguridad de 2 segundos para no trabar el UI fallando en conectarse
+          // 2-second security timeout to not freeze the UI if connection fails
           setTimeout(() => {
             sub.close()
             resolve(eventsAcc)
@@ -91,12 +91,12 @@ export function useNostrSWR<T>({
         })
 
         if (mounted && events.length > 0 && currentKey.current === queryKey) {
-          // Ordenar por el más reciente
+          // Sort by most recent
           const latestEvent = events.sort(
             (a, b) => b.created_at - a.created_at,
           )[0]
 
-          // Revisar Expiración (NIP-40)
+          // Check Expiration (NIP-40)
           const expirationTag = latestEvent.tags.find(
             (t: any) => t[0] === "expiration",
           )
@@ -110,29 +110,29 @@ export function useNostrSWR<T>({
               setData(parsedData)
               setIsCached(true)
               setIsLoading(false)
-              nostrOcurrioCacheHit = true
+              nostrCacheHit = true
               console.debug(`[useNostrSWR] Cache hit for ${queryKey}`)
             } catch (err) {
-              console.warn("[useNostrSWR] Error parseando JSON de Nostr", err)
+              console.warn("[useNostrSWR] Error parsing Nostr JSON", err)
             }
           }
         }
       } catch (err) {
-        console.warn("[useNostrSWR] Falló la consulta al caché de Nostr", err)
+        console.warn("[useNostrSWR] Nostr cache query failed", err)
       }
 
-      // 2. Fase de Revalidación (El "fetch" real en segundo plano)
+      // 2. Revalidation Phase (The real background fetch)
       try {
         const freshData = await fetchRealDataRef.current()
 
         if (mounted && currentKey.current === queryKey) {
-          // Si no hubo caché, o si la data es distinta (opcional: hacer deep compare), actualizamos
+          // If there was no cache, or if data is different (optional: do deep compare), we update
           setData(freshData)
-          setIsCached(false) // Los datos mostrados ahora ya son 100% frescos
+          setIsCached(false) // Data shown is now 100% fresh
           setIsLoading(false)
 
-          // 3. Opcional: Escribir los datos frescos en el caché parea todos!
-          // Solo si tenemos la función de firma (por ejemplo que comprueba que el usuario es un developer o un bot)
+          // 3. Optional: Write fresh data to cache for everyone!
+          // Only if we have the signing function (e.g. verifying user is a developer or a bot)
           const signFn = signEventFnRef.current
           if (signFn) {
             try {
@@ -151,18 +151,15 @@ export function useNostrSWR<T>({
               }
               const signedEvent = await signFn(eventTemplate)
 
-              // Publicar a los relays en fire-and-forget
+              // Publish to relays in fire-and-forget mode
               Promise.any(globalPool.publish(relays, signedEvent)).catch(() => {
                 // Ignore silent errors for publishing
               })
               console.debug(
-                `[useNostrSWR] Caché actualizado y publicado para ${queryKey}`,
+                `[useNostrSWR] Cache updated and published for ${queryKey}`,
               )
             } catch (err) {
-              console.warn(
-                "[useNostrSWR] No se pudo firmar o publicar el evento",
-                err,
-              )
+              console.warn("[useNostrSWR] Failed to sign or publish event", err)
             }
           }
         }
@@ -173,8 +170,8 @@ export function useNostrSWR<T>({
             err instanceof Error ? err : new Error("Unknown fetch error"),
           )
 
-          // Si no había datos del caché para mostrar, cortamos el loading
-          if (!nostrOcurrioCacheHit) {
+          // If there was no cache data to show, we stop loading
+          if (!nostrCacheHit) {
             setIsLoading(false)
           }
         }
@@ -186,7 +183,7 @@ export function useNostrSWR<T>({
     return () => {
       mounted = false
     }
-  }, [queryKey, kind, ttlSeconds, relaysKey]) // Dependemos de relaysKey (string) en vez de relays (array) para evitar loops
+  }, [queryKey, kind, ttlSeconds, relaysKey]) // We depend on relaysKey (string) instead of relays (array) to avoid loops
 
   return { data, isLoading, isCached, error }
 }
