@@ -3,7 +3,7 @@ import type { VirtoConnectProps } from "@/types/auth.types"
 import { useVirto } from "@/contexts/VirtoContext"
 
 const VirtoConnect: React.FC<VirtoConnectProps> = ({
-  serverUrl = "http://localhost:3000/api",
+  serverUrl = "hhttps://connect.virto.one/api",
   providerUrl = "wss://kreivo.io",
   onAuthSuccess,
   onAuthError,

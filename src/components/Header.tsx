@@ -161,7 +161,7 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
 
       try {
         const response = await fetch(
-          `http://localhost:3000/api/matrix/check-member?username=${encodeURIComponent(username)}`,
+          `hhttps://connect.virto.one/api/matrix/check-member?username=${encodeURIComponent(username)}`,
         )
         if (response.ok) {
           const data = await response.json()
@@ -363,7 +363,7 @@ const Header: React.FC<HeaderProps> = ({ onAuthSuccess, onAuthError }) => {
           {!isAuthenticated ? (
             <div className="kreivo-connect-wrapper">
               <VirtoConnect
-                serverUrl="http://localhost:3000/api"
+                serverUrl="hhttps://connect.virto.one/api"
                 providerUrl="wss://kreivo.io"
                 onAuthSuccess={handleAuthSuccess}
                 onAuthError={handleAuthError}

@@ -9,7 +9,7 @@ export const resolveUserAddress = async (username: string): Promise<string> => {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/api/get-user-address?userId=${encodeURIComponent(cleanUsername)}`,
+      `hhttps://connect.virto.one/api/get-user-address?userId=${encodeURIComponent(cleanUsername)}`,
     )
 
     if (!response.ok) {

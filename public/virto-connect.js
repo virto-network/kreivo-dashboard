@@ -80,7 +80,7 @@ const html = tagFn((s) =>
     .querySelector("template"),
 )
 const css = tagFn((s) => s)
-const DEFAULT_SERVER = "http://localhost:3000/api"
+const DEFAULT_SERVER = "hhttps://connect.virto.one/api"
 
 const dialogTp = html`
   <wa-dialog light-dismiss with-header with-footer>
